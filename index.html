@@ -26,20 +26,6 @@
         }).then(() => {
           // 最終処理実行
           change_disp();
-        
-          // iframe設定
-          document.querySelectorAll("a.weekly-pick-iframe > iframe").forEach((iframe) => {
-            console.log(iframe);
-            iframe.addEventListener("load", () => {
-              const doc = iframe.contentDocument;
-
-              // ヘッダーとサイドメニューを非表示
-              doc.querySelector("header").style.display = "none";
-              doc.querySelectorAll("aside.panel").forEach((panel) => {
-                panel.style.display = "none";
-              });
-            });
-          });
         });
 
     </script>
