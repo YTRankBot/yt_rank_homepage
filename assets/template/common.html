@@ -1,0 +1,153 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/assets/css/common.css" />
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">
+      <img src="/favicon.ico" width="36" height="36"/>
+      <span class="brand-text">
+        <span class="brand-title">YoutubeランキングBOT JP</span>
+        <span class="brand-sub">日本のYoutubeランキングを定期更新</span>
+      </span>
+    </a>
+
+    <nav class="top-nav" aria-label="グローバルナビ">
+      <a href="/" class="top-nav__link top">トップ</a>
+      <a href="#" class="top-nav__link rank">ランキング</a>
+      <a href="https://x.com/YT_RANK_BOT_JP" target="_blank" class="top-nav__link">X（旧Twitter）</a>
+    </nav>
+
+    <div class="header-tools">
+      <a class="mini-btn" href="https://twitter.com/messages/compose?recipient_id=1775886608967081984" target="_blank">お問い合わせ</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap layout">
+
+  <!-- Left sidebar -->
+  <aside class="panel" aria-label="カテゴリと絞り込み">
+    <div class="panel__bd">
+    
+      <h3 class="side-caption">カテゴリ</h3>
+      <div class="side-list catgory">
+        <a class="side-item all" href="#"><b>総合</b><span>All</span></a>
+        <a class="side-item gaming" href="#"><b>ゲーム</b><span>Gaming</span></a>
+        <a class="side-item music" href="#"><b>音楽</b><span>Music</span></a>
+        <a class="side-item film_animation" href="#"><b>映画とアニメ</b><span>FilmAnimation</span></a>
+        <a class="side-item pets_animals" href="#"><b>ペットと動物</b><span>PetsAnimals</span></a>
+        <a class="side-item entertainment" href="#"><b>エンターテイメント</b><span>Entertainment</span></a>
+        <a class="side-item sports" href="#"><b>スポーツ</b><span>Sports</span></a>
+        <a class="side-item autos_vehicles" href="#"><b>自動車と乗り物</b><span>AutosVehicles</span></a>
+        <a class="side-item travel_events" href="#"><b>旅行とイベント</b><span>TravelEvents</span></a>
+        <a class="side-item people_blogs" href="#"><b>ブログ</b><span>Blog</span></a>
+        <a class="side-item comedy" href="#"><b>コメディー</b><span>Comedy</span></a>
+        <a class="side-item news_politics" href="#"><b>ニュースと政治</b><span>NewsPolitics</span></a>
+        <a class="side-item howto_style" href="#"><b>ハウツーとスタイル</b><span>HowtoStyle</span></a>
+        <a class="side-item education" href="#"><b>教育</b><span>Education</span></a>
+        <a class="side-item science_technology" href="#"><b>科学と技術</b><span>ScienceTechnology</span></a>
+      </div>
+
+      <div class="panel__sep"></div>
+
+      <h3 class="side-caption">期間</h3>
+      <div class="side-list duration">
+        <a class="side-item weekly" href="#"><b>週間</b><span>7d</span></a>
+        <a class="side-item monthly" href="#"><b>月間</b><span>30d</span></a>
+        <a class="side-item yearly" href="#"><b>年間</b><span>365d</span></a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main" id="main">
+
+    <nav class="breadcrumb" aria-label="パンくずリスト">
+      <ol class="breadcrumb__list" id="breadcrumb">
+        <!-- JSで動的生成 -->
+      </ol>
+    </nav>
+    
+    {{replace_content}}
+  </main>
+
+  <!-- Right sidebar -->
+  <aside class="panel" aria-label="広告と人気リンク">
+    <div class="panel__bd">
+      <div class="ad-box ad-300x250">300×250</div>
+
+      <div class="panel__sep"></div>
+
+      <h3 class="side-caption">人気リンク</h3>
+      <div class="side-list">
+        <a class="side-item" href="#"><b>週間TOP100</b><span>7d</span></a>
+        <a class="side-item" href="#"><b>急上昇まとめ</b><span>new</span></a>
+        <a class="side-item" href="#"><b>カテゴリ一覧</b><span>all</span></a>
+      </div>
+      
+      <div class="panel__sep"></div>
+      
+      <div class="side-owner">
+        <img
+          src="/assets/icon.png"
+          alt="YT Rank JP 運営者"
+          class="side-owner__icon"
+          width="40"
+          height="40"
+        />
+        <div class="side-owner__text">
+          <div class="side-owner__title">運営者</div>
+          <div class="side-owner__desc">
+            <a href="https://x.com/YT_RANK_BOT_JP"
+               target="_blank" rel="noopener">
+              @YT_RANK_BOT_JP
+            </a><br/>
+            YouTubeランキングを自動集計
+          </div>
+        </div>
+      </div>
+
+      <div class="panel__sep"></div>
+      <div class="ad-box ad-160x600">160×600</div>
+    </div>
+  </aside>
+
+</div>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-col">
+      <div class="footer-title">当サイトについて</div>
+      <p class="footer-text">
+        当サイトのランキングは YouTube Data APIを利用して取得した情報をもとに、<br/>
+        独自に集計・加工したものです。<br/>
+        YouTubeおよびGoogle LLCは本サイトの内容・広告に一切関与していません。<br/>
+        ※ 当サイトはアフィリエイト広告を利用しています。
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <div class="footer-title">運営</div>
+      <a class="footer-link" href="https://twitter.com/messages/compose?recipient_id=1775886608967081984" target="_blank">お問い合わせ（XのDM）</a>
+      <a class="footer-link" href="/legal/privacy_policy.html">プライバシーポリシー</a>
+      <a class="footer-link" href="/legal/disclaimer.html">免責事項</a>
+      <a class="footer-link" href="/legal/terms.html">利用規約</a>
+      <a class="footer-link" href="/legal/about.html">当サイトについて</a>
+    </div>
+
+    <div class="footer-col">
+      <div class="ad-box ad-728x150">728×150</div>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    © 2025 Youtube Rank Bot JP
+  </div>
+</footer>
+
+

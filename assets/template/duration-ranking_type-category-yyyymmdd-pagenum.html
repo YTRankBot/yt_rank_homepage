@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+      <meta charset="UTF-8">
+      <title>{{page_title}} | YoutubeランキングBOT JP</title>
+      <meta name="filename" content="{{file_name}}">
+    </head>
+    <body>
+      <div id="root"> {{page_content}} </div>
+    </body>
+    
+    <!-- javascript -->
+    <script src="/assets/js/init.js"></script>
+    <script id="org_js">
+        
+        // メインコンテンツのファイル名を取得
+        const currentUrl = window.location.href;
+        const currentUrlParts = currentUrl.split("/");
+        const mainPageName = currentUrlParts[currentUrlParts.length - 1].replace(/\.html.*$/g, "_main.html");
+    
+        Promise.all([
+          fetch("/assets/template/common.html", { cache: "no-store" }).then(r => r.text()),
+          fetch("./" + mainPageName).then(r => r.text())
+        ]).then(([template, article]) => {
+          if(document.querySelector("div#root").innerHTML.trim() == "{{page_content}}") {
+            // メインコンテンツ部分を読み込んだ内容で置き換え、当html内で表示する
+            document.getElementById("root").innerHTML = template.replace("{{replace_content}}", article);
+          }
+        }).then(() => {
+          // 初期処理を実行
+          return init();
+        }).then(() => {
+          // 最終処理実行
+          change_disp();
+        });
+    </script>
+</html>

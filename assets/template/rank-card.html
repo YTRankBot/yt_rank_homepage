@@ -1,0 +1,32 @@
+<article class="rank-card {{add_class_article}}">
+  <div class="rank-badge">
+    <span class="rank-num">{{rank}}</span>
+    <span class="rank-medal" aria-hidden="true">{{rank_medal}}</span>
+    <span class="rank-views-badge">{{view_count}}</span>
+  </div>
+
+  <a class="rank-thumb" href="{{video_url}}" target="_blank" rel="noopener">
+    <img src="{{thumbnail_url}}" alt="" />
+  </a>
+
+  <div class="rank-body">
+    <a class="rank-title" href="{{video_url}}" target="_blank" rel="noopener">
+      {{video_title}}
+    </a>
+
+    <div class="rank-meta">
+      <a class="rank-channel" href="{{channel_url}}" target="_blank" rel="noopener">{{channel_title}}</a>
+    </div>
+
+    <div class="rank-actions">
+      <a class="rank-btn" href="{{video_url}}" target="_blank" rel="noopener">YouTubeで見る</a>
+    </div>
+  </div>
+
+  <div class="rank-comment">
+    <div class="rank-comment__label">みんなのコメント</div>
+    <p class="rank-comment__text">
+      {{rank_comment}}
+    </p>
+  </div>
+</article>

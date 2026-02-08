@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+      <meta charset="UTF-8">
+      <title>プライバシーポリシー | YoutubeランキングBOT JP</title>
+    </head>
+    <body>
+      <div id="root"></div>
+    </body>
+    
+    <!-- javascript -->
+    <script src="/assets/js/init.js"></script>
+    <script id="org_js">
+        Promise.all([
+          fetch("/assets/template/common.html", { cache: "no-store" }).then(r => r.text()),
+          fetch("./privacy_policy_main.html", { cache: "no-store" }).then(r => r.text())
+        ]).then(([template, article]) => {
+          if(document.querySelector("div#root").innerHTML.length == 0) {
+            // メインコンテンツ部分を読み込んだ内容で置き換え、当html内で表示する
+            document.getElementById("root").innerHTML = template.replace("{{replace_content}}", article);
+          }
+        }).then(() => {
+          // 初期処理を実行
+          return init();
+        }).then(() => {
+          // 最終処理実行
+          change_disp();
+        });
+    </script>
+</html>

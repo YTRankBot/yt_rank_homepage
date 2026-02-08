@@ -1,0 +1,81 @@
+<section class="panel">
+  <div class="panel__hd">
+    <div>
+      <h2 class="panel__title">{{page_title}}</h2>
+      <p class="panel__sub">
+        集計期間：<span class="data_analisis_date">{{data_analisis_start_date}}～{{data_analisis_end_date}}</span></br>
+        更新：<span class="data_get_date">{{created_date}}</span>
+      </p>
+    </div>
+
+    <div class="panel__hd-actions">
+      <div class="share-actions">
+<!--
+        <a class="share-btn rss" href="/rss/weekly-gaming.xml" title="RSSフィード">
+          <span class="share-btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" role="img" focusable="false" aria-hidden="true">
+              <path fill="currentColor" d="M6.18 17.82a1.64 1.64 0 1 1 0-3.28 1.64 1.64 0 0 1 0 3.28ZM4 4.5v3.1c6.83 0 12.4 5.57 12.4 12.4h3.1C19.5 11.47 12.53 4.5 4 4.5Zm0 5.2v3.1c3.96 0 7.2 3.23 7.2 7.2h3.1c0-5.67-4.63-10.3-10.3-10.3Z"/>
+            </svg>
+          </span>
+          <span class="label">RSS</span>
+        </a>
+-->
+        <a class="share-btn x"
+           href="https://x.com/intent/tweet?text=タイトル&url=URL"
+           target="_blank" rel="noopener" title="Xで共有">
+          <span class="share-btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" role="img" focusable="false" aria-hidden="true">
+              <path fill="currentColor" d="M18.9 2H22l-6.8 7.8L23.2 22h-6.6l-5.2-6.5L5.8 22H2.7l7.3-8.4L1 2h6.7l4.7 6.1L18.9 2Zm-1.2 18h1.7L6.8 3.9H5L17.7 20Z"/>
+            </svg>
+          </span>
+          <span class="label">Xで共有</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel__bd">
+    <div class="paper-frame rank-hero">
+      <div class="paper-frame__note">
+        ※ 以下画像はTOP{{rank_show_range_top}}位～{{rank_show_range_under}}位です。詳細は画像下のリストで確認できます。
+      </div>
+      <img
+        class="ranking-image"
+        src="{{rank_image_path}}"
+        alt="{{rank_image_description}}"
+      />
+    </div>
+
+    <!-- ② TOP10 リスト -->
+    <div class="rank-list">
+        {{rank_card_1}}
+        {{rank_card_2}}
+        {{rank_card_3}}
+        {{rank_card_4}}
+        {{rank_card_5}}
+        {{rank_card_6}}
+        {{rank_card_7}}
+        {{rank_card_8}}
+        {{rank_card_9}}
+        {{rank_card_10}}
+    </div>
+
+    <!-- ③ ページ送り（最下部） -->
+    <nav class="pager" aria-label="ランキングのページ送り">
+      <a class="pager-btn previous" href="#" aria-disabled="false">← 前へ</a>
+
+      <div class="pager-pages">
+        <a class="pager-page" href="{{rank_page_1_url}}">1</a>
+        <a class="pager-page" href="{{rank_page_2_url}}">2</a>
+        <a class="pager-page" href="{{rank_page_3_url}}">3</a>
+        <a class="pager-page" href="{{rank_page_4_url}}">4</a>
+      </div>
+
+      <a class="pager-btn next" href="#" aria-disabled="false">次へ →</a>
+    </nav>
+
+    <div class="pager-note">
+      表示：<b>{{rank_show_range_top}}位～{{rank_show_range_under}}位</b> ／ 全<b>{{rank_bottom}}</b>位
+    </div>
+  </div>
+</section>

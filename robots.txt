@@ -1,0 +1,16 @@
+# Allow major search engines
+User-agent: Googlebot
+Disallow:
+
+User-agent: Bingbot
+Disallow:
+
+User-agent: YandexBot
+Disallow:
+
+User-agent: Baiduspider
+Disallow:
+
+# Block all other bots
+User-agent: *
+Disallow: /
