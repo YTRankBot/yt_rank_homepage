@@ -771,11 +771,13 @@ a {color:inherit; text-decoration:none}
 }
 
 /* TOP1〜3だけ表示 */
+/* ランキングコメントは載せられてないからまだ
 .rank-card--podium.is-1 .rank-comment,
 .rank-card--podium.is-2 .rank-comment,
 .rank-card--podium.is-3 .rank-comment{
   display:block;
 }
+*/
 
 /* podium別の色分け */
 .rank-card--podium.is-1 .rank-comment{

@@ -8,6 +8,14 @@ async function change_disp() {
   let currentUrl = window.location.href;
   let originUrl = window.location.origin + "/";
   
+  // ランキング期間種別
+  let currentRankingDurationType = "";
+  
+  // ランキングカテゴリ
+  let category = "";
+  
+  let isShort = false;
+  
   // ヘッダーメニューのアクティブ設定
   if(currentUrl == originUrl) {
     // トップページの場合
@@ -20,60 +28,83 @@ async function change_disp() {
     if(currentUrl.includes("weekly")) {
       // 週間の場合
       document.querySelector("div.side-list.duration > a.side-item.weekly").classList.add("is-active");
+      currentRankingDurationType = "weekly";
     } else if(currentUrl.includes("monthly")) {
       // 月間の場合
       document.querySelector("div.side-list.duration > a.side-item.monthly").classList.add("is-active");
+      currentRankingDurationType = "monthly";
     } else if(currentUrl.includes("yearly")) {
       // 年間の場合
       document.querySelector("div.side-list.duration > a.side-item.yearly").classList.add("is-active");
+      currentRankingDurationType = "yearly";
     }
     
     // サイドメニュー（ジャンル）のアクティブ設定
-    if(currentUrl.toLowerCase().includes("all")) {
-      // 総合
-      document.querySelector("div.side-list.catgory > a.side-item.all").classList.add("is-active");
-    } else if(currentUrl.toLowerCase().includes("gaming")){
-      // ゲーム
-      document.querySelector("div.side-list.catgory > a.side-item.gaming").classList.add("is-active");
-    } else if(currentUrl.toLowerCase().includes("music")){
-      // 音楽
-      document.querySelector("div.side-list.catgory > a.side-item.music").classList.add("is-active");
-    } else if(currentUrl.toLowerCase().includes("film_animation")){
+    if(currentUrl.toLowerCase().includes("film_animation")){
       // 映画とアニメ
       document.querySelector("div.side-list.catgory > a.side-item.film_animation").classList.add("is-active");
-    } else if(currentUrl.toLowerCase().includes("pets_animals")){
-      // ペットと動物
-      document.querySelector("div.side-list.catgory > a.side-item.pets_animals").classList.add("is-active");
-    } else if(currentUrl.toLowerCase().includes("entertainment")){
-      // エンターテイメント
-      document.querySelector("div.side-list.catgory > a.side-item.entertainment").classList.add("is-active");
-    } else if(currentUrl.toLowerCase().includes("sports")){
-      // スポーツ
-      document.querySelector("div.side-list.catgory > a.side-item.sports").classList.add("is-active");
+      category = "FILM_ANIMATION";
     } else if(currentUrl.toLowerCase().includes("autos_vehicles")){
       // 自動車と乗り物
       document.querySelector("div.side-list.catgory > a.side-item.autos_vehicles").classList.add("is-active");
+      category = "AUTOS_VEHICLES";
+    } else if(currentUrl.toLowerCase().includes("music")){
+      // 音楽
+      document.querySelector("div.side-list.catgory > a.side-item.music").classList.add("is-active");
+      category = "MUSIC";
+    } else if(currentUrl.toLowerCase().includes("pets_animals")){
+      // ペットと動物
+      document.querySelector("div.side-list.catgory > a.side-item.pets_animals").classList.add("is-active");
+      category = "PETS_ANIMALS";
+    } else if(currentUrl.toLowerCase().includes("sports")){
+      // スポーツ
+      document.querySelector("div.side-list.catgory > a.side-item.sports").classList.add("is-active");
+      category = "SPORTS";
     } else if(currentUrl.toLowerCase().includes("travel_events")){
       // 旅行とイベント
       document.querySelector("div.side-list.catgory > a.side-item.travel_events").classList.add("is-active");
+      category = "TRAVEL_EVENTS";
+    } else if(currentUrl.toLowerCase().includes("gaming")){
+      // ゲーム
+      document.querySelector("div.side-list.catgory > a.side-item.gaming").classList.add("is-active");
+      category = "GAMING";
     } else if(currentUrl.toLowerCase().includes("people_blogs")){
       // ブログ
       document.querySelector("div.side-list.catgory > a.side-item.people_blogs").classList.add("is-active");
+      category = "PEOPLE_BLOGS";
     } else if(currentUrl.toLowerCase().includes("comedy")){
       // コメディー
       document.querySelector("div.side-list.catgory > a.side-item.comedy").classList.add("is-active");
+      category = "COMEDY";
+    } else if(currentUrl.toLowerCase().includes("entertainment")){
+      // エンターテイメント
+      document.querySelector("div.side-list.catgory > a.side-item.entertainment").classList.add("is-active");
+      category = "ENTERTAINMENT";
     } else if(currentUrl.toLowerCase().includes("news_politics")){
       // ニュースと政治
       document.querySelector("div.side-list.catgory > a.side-item.news_politics").classList.add("is-active");
+      category = "NEWS_POLITICS";
     } else if(currentUrl.toLowerCase().includes("howto_style")){
       // ハウツーとスタイル
       document.querySelector("div.side-list.catgory > a.side-item.howto_style").classList.add("is-active");
+      category = "HOWTO_STYLE";
     } else if(currentUrl.toLowerCase().includes("education")){
       // 教育
       document.querySelector("div.side-list.catgory > a.side-item.education").classList.add("is-active");
+      category = "EDUCATION";
     } else if(currentUrl.toLowerCase().includes("science_technology")){
       // 科学と技術
       document.querySelector("div.side-list.catgory > a.side-item.science_technology").classList.add("is-active");
+      category = "SCIENCE_TECHNOLOGY";
+    } else if(currentUrl.toLowerCase().includes("all")) {
+      // 総合
+      document.querySelector("div.side-list.catgory > a.side-item.all").classList.add("is-active");
+      category = "All";
+    }
+    
+    // ショート動画かどうか
+    if(currentUrl.toLowerCase().includes("_short")) {
+      isShort = true;
     }
     
     // Xで共有リンク設定
@@ -81,14 +112,31 @@ async function change_disp() {
     document.querySelector("a.share-btn.x").href = "https://x.com/intent/post?text=" + title + "&url=" + currentUrl;
     
     // ページ下部の次ページリンク設定
-    // URLから日付とページ番号を取得
+    // URLから日付, ページ番号, カテゴリを取得
     const match = currentUrl.match(/(20\d{6})-(\d+)/);
     const pageDate = match[1];
     const pageNum = Number(match[2]);
     
     // ページ構成jsonを読み込む
     const json = await loadConfig();
-    const files = json.data.weekly[pageDate];
+    let files = [];
+    
+    // jsonからページリストを取得する
+    for(let rankingDurationTypePage of json.rankingDurationTypes) {
+      if(currentRankingDurationType == rankingDurationTypePage.durationType) {
+        for(let page of rankingDurationTypePage.pageList) {
+          if(pageDate == page.dataGetStartTiming) {
+            for(detailPage of page.detailPages) {
+              if(category == detailPage.category && isShort == detailPage.isShort) {
+                files = detailPage.pageNameList;
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    
     console.log("ページ番号：" + pageNum);
     // 前へボタン設定
     if(pageNum == 1) {
