@@ -109,7 +109,8 @@ async function change_disp() {
     
     // Xで共有リンク設定
     const title = document.querySelector("h2.panel__title").innerText;
-    document.querySelector("a.share-btn.x").href = "https://x.com/intent/post?text=" + title + "&url=" + currentUrl;
+    const dataAnalisisDate = document.querySelector("span.data_analisis_date").innerText;
+    document.querySelector("a.share-btn.x").href = "https://x.com/intent/post?text=" + title + "%0A集計期間：" + dataAnalisisDate + "%0A%0A" + "&url=" + currentUrl;
     
     // ページ下部の次ページリンク設定
     // URLから日付, ページ番号, カテゴリを取得
