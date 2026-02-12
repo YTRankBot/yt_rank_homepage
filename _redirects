@@ -1,0 +1,13 @@
+# 特定のURLを呼び出された際にリダイレクトする（中身のみ）
+# weekly
+/ranking/weekly   /ranking/index.html?durationType=weekly 200
+/ranking/weekly/  /ranking/index.html?durationType=weekly 200
+
+# monthly
+/ranking/monthly  /ranking/index.html?durationType=monthly 200
+/ranking/monthly/ /ranking/index.html?durationType=monthly 200
+
+# yearly
+/ranking/yearly   /ranking/index.html?durationType=yearly 200
+/ranking/yearly/  /ranking/index.html?durationType=yearly 200
+
