@@ -47,7 +47,6 @@ function init() {
                , {async: true, attrs: {crossorigin: "anonymous"}}
              )
          ]).then(() => {
-           // Googleアドセンス関連？
-           (adsbygoogle = window.adsbygoogle || []).push({});
+           // 何か後続処理あれば
          });
 }

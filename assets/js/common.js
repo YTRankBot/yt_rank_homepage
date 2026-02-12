@@ -1,8 +1,5 @@
 // 表示状態の切り替え
 async function change_disp() {
-
-  // パンくずリスト作成
-  buildBreadcrumb();
   
   // 現在のページURLを取得
   let currentUrl = window.location.href;
@@ -16,6 +13,9 @@ async function change_disp() {
   
   let isShort = false;
   
+  // 動画幅
+  const videoWidth = "";
+  
   // ヘッダーメニューのアクティブ設定
   if(currentUrl == originUrl) {
     // トップページの場合
@@ -24,88 +24,73 @@ async function change_disp() {
     // ランキングページの場合
     document.querySelector("nav.top-nav > a.rank").classList.add("is-active");
     
-    // サイドメニュー（期間）のアクティブ設定
+    // 動画期間タイプ取得
     if(currentUrl.includes("weekly")) {
       // 週間の場合
-      document.querySelector("div.side-list.duration > a.side-item.weekly").classList.add("is-active");
       currentRankingDurationType = "weekly";
     } else if(currentUrl.includes("monthly")) {
       // 月間の場合
-      document.querySelector("div.side-list.duration > a.side-item.monthly").classList.add("is-active");
       currentRankingDurationType = "monthly";
     } else if(currentUrl.includes("yearly")) {
       // 年間の場合
-      document.querySelector("div.side-list.duration > a.side-item.yearly").classList.add("is-active");
       currentRankingDurationType = "yearly";
     }
     
-    // サイドメニュー（ジャンル）のアクティブ設定
-    if(currentUrl.toLowerCase().includes("film_animation")){
+    // ランキングカテゴリ取得
+    if(currentUrl.includes("FILM_ANIMATION")){
       // 映画とアニメ
-      document.querySelector("div.side-list.catgory > a.side-item.film_animation").classList.add("is-active");
       category = "FILM_ANIMATION";
-    } else if(currentUrl.toLowerCase().includes("autos_vehicles")){
+    } else if(currentUrl.includes("AUTOS_VEHICLES")){
       // 自動車と乗り物
-      document.querySelector("div.side-list.catgory > a.side-item.autos_vehicles").classList.add("is-active");
       category = "AUTOS_VEHICLES";
-    } else if(currentUrl.toLowerCase().includes("music")){
+    } else if(currentUrl.includes("MUSIC")){
       // 音楽
-      document.querySelector("div.side-list.catgory > a.side-item.music").classList.add("is-active");
       category = "MUSIC";
-    } else if(currentUrl.toLowerCase().includes("pets_animals")){
+    } else if(currentUrl.includes("PETS_ANIMALS")){
       // ペットと動物
-      document.querySelector("div.side-list.catgory > a.side-item.pets_animals").classList.add("is-active");
       category = "PETS_ANIMALS";
-    } else if(currentUrl.toLowerCase().includes("sports")){
+    } else if(currentUrl.includes("SPORTS")){
       // スポーツ
-      document.querySelector("div.side-list.catgory > a.side-item.sports").classList.add("is-active");
       category = "SPORTS";
-    } else if(currentUrl.toLowerCase().includes("travel_events")){
+    } else if(currentUrl.includes("TRAVEL_EVENTS")){
       // 旅行とイベント
-      document.querySelector("div.side-list.catgory > a.side-item.travel_events").classList.add("is-active");
       category = "TRAVEL_EVENTS";
-    } else if(currentUrl.toLowerCase().includes("gaming")){
+    } else if(currentUrl.includes("GAMING")){
       // ゲーム
-      document.querySelector("div.side-list.catgory > a.side-item.gaming").classList.add("is-active");
       category = "GAMING";
-    } else if(currentUrl.toLowerCase().includes("people_blogs")){
+    } else if(currentUrl.includes("PEOPLE_BLOGS")){
       // ブログ
-      document.querySelector("div.side-list.catgory > a.side-item.people_blogs").classList.add("is-active");
       category = "PEOPLE_BLOGS";
-    } else if(currentUrl.toLowerCase().includes("comedy")){
+    } else if(currentUrl.includes("COMEDY")){
       // コメディー
-      document.querySelector("div.side-list.catgory > a.side-item.comedy").classList.add("is-active");
       category = "COMEDY";
-    } else if(currentUrl.toLowerCase().includes("entertainment")){
+    } else if(currentUrl.includes("ENTERTAINMENT")){
       // エンターテイメント
-      document.querySelector("div.side-list.catgory > a.side-item.entertainment").classList.add("is-active");
       category = "ENTERTAINMENT";
-    } else if(currentUrl.toLowerCase().includes("news_politics")){
+    } else if(currentUrl.includes("NEWS_POLITICS")){
       // ニュースと政治
-      document.querySelector("div.side-list.catgory > a.side-item.news_politics").classList.add("is-active");
       category = "NEWS_POLITICS";
-    } else if(currentUrl.toLowerCase().includes("howto_style")){
+    } else if(currentUrl.includes("HOWTO_STYLE")){
       // ハウツーとスタイル
-      document.querySelector("div.side-list.catgory > a.side-item.howto_style").classList.add("is-active");
       category = "HOWTO_STYLE";
-    } else if(currentUrl.toLowerCase().includes("education")){
+    } else if(currentUrl.includes("EDUCATION")){
       // 教育
-      document.querySelector("div.side-list.catgory > a.side-item.education").classList.add("is-active");
       category = "EDUCATION";
-    } else if(currentUrl.toLowerCase().includes("science_technology")){
+    } else if(currentUrl.includes("SCIENCE_TECHNOLOGY")){
       // 科学と技術
-      document.querySelector("div.side-list.catgory > a.side-item.science_technology").classList.add("is-active");
       category = "SCIENCE_TECHNOLOGY";
-    } else if(currentUrl.toLowerCase().includes("all")) {
+    } else if(currentUrl.includes("All")) {
       // 総合
-      document.querySelector("div.side-list.catgory > a.side-item.all").classList.add("is-active");
       category = "All";
     }
     
-    // ショート動画かどうか
-    if(currentUrl.toLowerCase().includes("_short")) {
+    // ショート動画かどうか取得
+    if(currentUrl.includes("_short")) {
       isShort = true;
     }
+
+    // 動画幅
+    const videoWidth = isShort ? "short" : "full";
     
     // Xで共有リンク設定
     const title = document.querySelector("h2.panel__title").innerText;
@@ -118,7 +103,7 @@ async function change_disp() {
     const pageDate = match[1];
     const pageNum = Number(match[2]);
     
-    // ページ構成jsonを読み込む
+    // ページ構成jsonを読み込み
     const json = await loadConfig();
     let files = [];
     
@@ -180,6 +165,19 @@ async function change_disp() {
     }
   }
 
+  // パンくずリスト作成
+  buildBreadcrumb(currentRankingDurationType, category);
+
+  // サイドメニューの検索欄設定
+  setupSideFilterSearch({
+    baseUrl: "/ranking"
+    , initialCategory: category
+    , initialRankingDurationType: currentRankingDurationType
+    , initialVideoWidth: videoWidth
+  });
+  
+  // Googleアドセンス関連（エラー対策に最後に呼び出し）
+  (adsbygoogle = window.adsbygoogle || []).push({});
 }
 
 // ページ構成jsonを取得
@@ -191,40 +189,37 @@ async function loadConfig() {
 
 
 // パンくずリスト
-function buildBreadcrumb() {
+function buildBreadcrumb(rankingDurationType, category) {
   const list = document.getElementById("breadcrumb");
   if (!list) return;
-
-  const path = location.pathname.replace(/\/$/, "");
 
   const crumbs = [];
   crumbs.push({ name: "トップ", url: "/" });
 
   // ranking 配下
-  if (path.includes("/ranking/")) {
-    crumbs.push({ name: "ランキング", url: "/rank-weekly-all.html" }); // ランキング導線の代表リンク
+  if (location.pathname.includes("ranking")) {
+    crumbs.push({ name: "ランキング", url: "/ranking" }); // ランキング導線の代表リンク
 
-    if (path.includes("/weekly/")) crumbs.push({ name: "週間" });
-    else if (path.includes("/monthly/")) crumbs.push({ name: "月間" });
-    else if (path.includes("/yearly/")) crumbs.push({ name: "年間" });
+    if (rankingDurationType == "weekly") crumbs.push({ name: "週間" });
+    else if (rankingDurationType == "monthly") crumbs.push({ name: "月間" });
+    else if (rankingDurationType == "yearly") crumbs.push({ name: "年間" });
 
     // カテゴリ（URL文字列ベース）
-    const lower = path.toLowerCase();
-    if (lower.includes("all")) crumbs.push({ name: "総合" });
-    else if (lower.includes("gaming")) crumbs.push({ name: "ゲーム" });
-    else if (lower.includes("music")) crumbs.push({ name: "音楽" });
-    else if (lower.includes("film_animation")) crumbs.push({ name: "映画とアニメ" });
-    else if (lower.includes("pets_animals")) crumbs.push({ name: "ペットと動物" });
-    else if (lower.includes("entertainment")) crumbs.push({ name: "エンターテイメント" });
-    else if (lower.includes("sports")) crumbs.push({ name: "スポーツ" });
-    else if (lower.includes("autos_vehicles")) crumbs.push({ name: "自動車と乗り物" });
-    else if (lower.includes("travel_events")) crumbs.push({ name: "旅行とイベント" });
-    else if (lower.includes("people_blogs")) crumbs.push({ name: "ブログ" });
-    else if (lower.includes("comedy")) crumbs.push({ name: "コメディー" });
-    else if (lower.includes("news_politics")) crumbs.push({ name: "ニュースと政治" });
-    else if (lower.includes("howto_style")) crumbs.push({ name: "ハウツーとスタイル" });
-    else if (lower.includes("education")) crumbs.push({ name: "教育" });
-    else if (lower.includes("science_technology")) crumbs.push({ name: "科学と技術" });
+    if (category == "FILM_ANIMATION") crumbs.push({ name: "映画とアニメ" });
+    else if (category == "AUTOS_VEHICLES") crumbs.push({ name: "自動車と乗り物" });
+    else if (category == "MUSIC") crumbs.push({ name: "音楽" });
+    else if (category == "PETS_ANIMALS") crumbs.push({ name: "ペットと動物" });
+    else if (category == "SPORTS") crumbs.push({ name: "スポーツ" });
+    else if (category == "TRAVEL_EVENTS") crumbs.push({ name: "旅行とイベント" });
+    else if (category == "GAMING") crumbs.push({ name: "ゲーム" });
+    else if (category == "PEOPLE_BLOGS") crumbs.push({ name: "ブログ" });
+    else if (category == "COMEDY") crumbs.push({ name: "コメディー" });
+    else if (category == "ENTERTAINMENT") crumbs.push({ name: "エンターテイメント" });
+    else if (category == "NEWS_POLITICS") crumbs.push({ name: "ニュースと政治" });
+    else if (category == "HOWTO_STYLE") crumbs.push({ name: "ハウツーとスタイル" });
+    else if (category == "EDUCATION") crumbs.push({ name: "教育" });
+    else if (category == "SCIENCE_TECHNOLOGY") crumbs.push({ name: "科学と技術" });
+    else if (category == "All") crumbs.push({ name: "総合" });
   }
 
   // 描画
@@ -237,5 +232,106 @@ function buildBreadcrumb() {
     else li.innerHTML = `<span>${c.name}</span>`;
 
     list.appendChild(li);
+  });
+}
+
+/**
+ * 検索機能
+ */
+function setupSideFilterSearch({ baseUrl, initialCategory = null, initialRankingDurationType = null, initialVideoWidth = false }) {
+
+  // --- 対象要素の取得 ---
+  const categoryTags = [...document.querySelectorAll("div.side-list.catgory .tag[data-category]")];
+  const durationTags = [...document.querySelectorAll("div.side-list.duration .tag[data-duration]")];
+  const videoWidthTags = [...document.querySelectorAll("div.side-list.video-width .tag[data-video-width]")];
+
+  // いずれの要素も選択されていないときは何もしない
+  const isSelectedSearchEles = (categoryTags.length + durationTags.length + videoWidthTags.length) > 0;
+  if(!isSelectedSearchEles) return;
+
+  // 検索ボタン取得
+  let searchBtn = document.querySelector(".side-search-btn");
+
+  // 初期値：URLクエリがあれば優先
+  const params = new URLSearchParams(location.search);
+  let selectedCategory = params.get("category") || initialCategory;
+  let selectedDuration = params.get("duration") || initialRankingDurationType;
+  let selectedVideoWidth = params.get("videoWidth") || initialVideoWidth;
+
+  // 共通：選択1つだけ active にする
+  function selectOne(elems, elemToSelect) {
+    elems.forEach(el => el.classList.remove("is-active"));
+    if(elemToSelect) elemToSelect.classList.add("is-active");
+  }
+
+  // キーボードとタブ操作可能にする
+  function makeTagInteractive(tag) {
+    tag.setAttribute("role", "button");
+    tag.setAttribute("tabindex", "0");
+    tag.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        tag.click();
+      }
+    });
+  }
+
+  if(isSelectedSearchEles) {
+    categoryTags.forEach(makeTagInteractive);
+    durationTags.forEach(makeTagInteractive);
+    videoWidthTags.forEach(makeTagInteractive);
+
+    // 初期表示反映
+    if(selectedCategory) {
+      const t = categoryTags.find(x => x.dataset.category === selectedCategory);
+      if(t) selectOne(categoryTags, t);
+    }
+    
+    if(selectedDuration) {
+      const t = durationTags.find(x => x.dataset.duration === selectedDuration);
+      if(t) selectOne(durationTags, t);
+    }
+    
+    if(selectedVideoWidth) {
+      const t = videoWidthTags.find(x => x.dataset.videoWidth === selectedVideoWidth);
+      if(t) selectOne(videoWidthTags, t);
+    }
+
+    // クリックで選択
+    categoryTags.forEach(tag => {
+      tag.addEventListener("click", () => {
+        selectOne(categoryTags, tag);
+        selectedCategory = tag.dataset.category;
+      });
+    });
+
+    durationTags.forEach(tag => {
+      tag.addEventListener("click", () => {
+        selectOne(durationTags, tag);
+        selectedDuration = tag.dataset.duration;
+      });
+    });
+
+    videoWidthTags.forEach(tag => {
+      tag.addEventListener("click", () => {
+        selectOne(videoWidthTags, tag);
+        selectedVideoWidth = tag.dataset.video-width;
+      });
+    });
+  }
+
+  // 検索ボタン：選択値をクエリにして遷移
+  searchBtn.addEventListener("click", () => {
+    if(!selectedCategory || !selectedDuration || !selectedVideoWidth) {
+      alert("カテゴリと期間を選択してください");
+      return;
+    }
+
+    const url = new URL(baseUrl, location.origin);
+    url.searchParams.set("category", selectedCategory);
+    url.searchParams.set("duration", selectedDuration);
+    url.searchParams.set("videoWidth", selectedVideoWidth);
+
+    location.href = url.toString();
   });
 }
