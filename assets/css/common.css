@@ -178,6 +178,7 @@ a {color:inherit; text-decoration:none}
 .share-btn.x .share-btn__icon {
   background:#000;
   color:#fff;
+  white-space: nowrap;
 }
 
 /* RSS */
