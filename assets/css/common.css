@@ -633,8 +633,8 @@ div.ad-160x600 {display: none}
   display:block;
 }
 .rank-thumb img{
-  width:92px;
-  height:92px;
+  width:100%;
+  aspect-ratio:1/1;
   object-fit:cover;
   border-radius:12px;
   border:1px solid var(--line);
@@ -722,8 +722,8 @@ div.ad-160x600 {display: none}
 }
 
 .rank-card--podium .rank-thumb img{
-  width:108px;
-  height:108px;
+  width:100%;
+  aspect-ratio:1/1;
   border-width:2px;
 }
 
@@ -887,22 +887,6 @@ div.ad-160x600 {display: none}
 
 
 /* ============== モバイル最適化 ============== */
-
-// サムネだけ縮小
-@media (max-width: 520px) {
-
-  /* 通常カード */
-  .rank-thumb img{
-    max-width: 60px;
-    max-height: 60px;
-  }
-
-  /* TOP1〜3（podium） */
-  .rank-card--podium .rank-thumb img{
-    max-width: 72px;
-    max-height: 72px;
-  }
-}
 
 @media (max-width: 680px){
   .rank-card{
