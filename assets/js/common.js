@@ -42,7 +42,7 @@ async function change_disp() {
         for(let page of rankingDurationTypePage.pageList) {
           if(pageDate == page.dataGetStartTiming) {
             for(detailPage of page.detailPages) {
-              if(GlobalVar.data.category[0] == detailPage.category && GlobalVar.data.isShort == detailPage.isShort) {
+              if(GlobalVar.data.category[0] == detailPage.categoryId && GlobalVar.data.isShort == detailPage.isShort) {
                 files = detailPage.pageNameList;
                 break;
               }
@@ -119,10 +119,9 @@ function buildBreadcrumb(rankingDurationType, category) {
 
   // ranking 配下
   if (location.pathname.includes("ranking")) {
-    crumbs.push({ name: "ランキング", url: "/ranking/index.html" }); // ランキング導線の代表リンク
     
     // ランキング期間タイプ
-    crumbs.push({name: rankingDurationType[1]
+    crumbs.push({name: "ランキング（" + rankingDurationType[1] + "）"
                  , url: "/ranking/index.html?duration=" + rankingDurationType[0]
                 });
 
@@ -296,10 +295,8 @@ function toTimestamp(datetimeStr) {
  * テンプレートHTMLを読み込む
  */
 async function loadTemplateHtml(templateHtmlPath) {
-  if (_rankLinkTpl !== null) return _rankLinkTpl;
   const res = await fetch(templateHtmlPath, { cache: "no-cache" });
   if (!res.ok) throw new Error(`Template fetch failed: ${res.status} ${templateHtmlPath}`);
-  _rankLinkTpl = await res.text();
-  return _rankLinkTpl;
+  return await res.text();
 }
 

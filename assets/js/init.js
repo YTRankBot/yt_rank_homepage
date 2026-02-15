@@ -101,12 +101,14 @@ function init() {
   }
 
   // ショート動画かどうか取得
-  if(GlobalVar.data.currentUrl.includes("_short")) {
-    GlobalVar.data.isShort = true;
-    GlobalVar.data.videoWidth = "short";
-  } else {
-    GlobalVar.data.isShort = false;
-    GlobalVar.data.videoWidth = "full";
+  if(GlobalVar.data.currentUrl.includes("_ranking")) {
+    if(GlobalVar.data.currentUrl.includes("_short")) {
+      GlobalVar.data.isShort = true;
+      GlobalVar.data.videoWidth = "short";
+    } else {
+      GlobalVar.data.isShort = false;
+      GlobalVar.data.videoWidth = "full";
+    }
   }
   
   // 既存スクリプト位置

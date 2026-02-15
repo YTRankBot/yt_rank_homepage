@@ -1,4 +1,4 @@
-async function showResult() {
+async function generateLatestPics() {
   // ページ構成jsonを読み込み
   const configJson = await loadJson("/assets/json/ranking_page_config.json");
   
@@ -6,27 +6,32 @@ async function showResult() {
   const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly");
   
   // 週間再生数ランキング一覧枠要素
-  const weeklyPics = document.querySelector("div#weekly-picks");
+  const weeklyPicsDom = document.querySelector("div#weekly-picks");
   
   // テンプレート読み込み
-  const cardTemplate = await loadTemplate("/assets/template/search-card.html");
-  const allCardsHtml = "";
+  const cardTemplate = await loadTemplateHtml("/assets/template/search-card.html");
+  let allCardsHtml = "";
   
   for(const data of latestWeeklyDetails) {
-    allCardsHtml += applyTemplate(cardTemplate, {
+    allCardsHtml += replaceTemplate(cardTemplate, {
       page_link : "/ranking/weekly/" + data.pageNameList[0]
       , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
-      , durationType : item.meta ?? ""
-      , category :
-      , dataGetDate :
-      , border_rank :
+      , durationType : "週間"
+      , category : data.categoryName
+      , shortTag : (data.isShort ? "<ショート>" : "")
+      , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
+      , bottom_rank : data.bottomRank
+      , comment : data.rankingComment
     }) + "\r\n";
-    
-    
-    card.replace
-    console.log(data.dataGetDatetime);
-    console.log(data.pageNameList[0]);
   }
+  
+  weeklyPicsDom.innerHTML = allCardsHtml.trim();
+  
+  const endDate = latestWeeklyDetails[0].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
+  const startDate = latestWeeklyDetails[latestWeeklyDetails.length - 1].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
+  
+  // 期間を更新
+  document.querySelector("section.panel.weekly_pics span.data_analisis_date").innerHTML = startDate + " ～ " + endDate;
 }
 
 /**

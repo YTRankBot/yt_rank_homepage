@@ -1,16 +1,15 @@
-<section class="panel">
+<section class="panel weekly_pics">
   <div class="panel__hd">
     <div>
-      <h2 class="panel__title">今週の週間再生数ランキング（ジャンル別）</h2>
+      <h2 class="panel__title">【最新】週間再生数ランキング（ジャンル別）</h2>
       <p class="panel__sub">
-        集計期間：<span class="data_analisis_date">2025/12/09～12/15</span>｜最大7件表示
+        集計日期間：<span class="data_analisis_date"></span>｜最大7件表示
       </p>
     </div>
   </div>
 
   <div class="panel__bd">
     <div class="weekly-picks" id="weekly-picks">
-      {weekly_picks}
     </div>
   </div>
 </section>
@@ -18,9 +17,8 @@
 <section class="panel">
   <div class="panel__bd">
     <div class="pill-row">
-      <a class="pill" href="./rank-weekly-all.html">週間ランキング</a>
-      <a class="pill" href="./rank-monthly-all.html">月間ランキング</a>
-      <a class="pill" href="./rank-yearly-all.html">年間ランキング</a>
+      <a class="pill" href="/ranking/index.html?duration=weekly">週間ランキング</a>
+      <a class="pill" href="/ranking/index.html?duration=monthly">月間ランキング</a>
     </div>
   </div>
 </section>
@@ -32,9 +30,11 @@
 
   <div class="panel__bd">
     <div class="pill-row">
-      <a class="pill" href="./rank-weekly-gaming.html">ゲーム</a>
-      <a class="pill" href="./rank-weekly-music.html">音楽</a>
-      <a class="pill" href="./rank-weekly-anime.html">アニメ</a>
+      <a class="pill" href="/ranking/index.html?duration=weekly&category=GAMING&videoWidth=full">ゲーム</a>
+      <a class="pill" href="/ranking/index.html?duration=weekly&category=PETS_ANIMALS&videoWidth=full">音楽</a>
+      <a class="pill" href="/ranking/index.html?duration=weekly&category=MUSIC&videoWidth=full">アニメ</a>
+      <a class="pill" href="/ranking/index.html?duration=weekly&category=All&videoWidth=full">総合</a>
+      <a class="pill" href="/ranking/index.html?duration=weekly&category=All&videoWidth=short">総合（ショート）</a>
     </div>
   </div>
 </section>
