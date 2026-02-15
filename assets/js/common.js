@@ -1,20 +1,5 @@
 // 表示状態の切り替え
 async function change_disp() {
-
-  // 現在のページURLを取得
-  let currentUrl = window.location.href;
-  let originUrl = window.location.origin + "/";
-
-  // ランキング期間種別
-  let currentRankingDurationType = "";
-
-  // ランキングカテゴリ
-  let category = "";
-
-  let isShort = false;
-
-  // 動画幅
-  const videoWidth = "";
   
   // 人気リンクタグ作成
   // 人気リンクJson読み込み
@@ -29,89 +14,21 @@ async function change_disp() {
   }
 
   // ヘッダーメニューのアクティブ設定
-  if(currentUrl == originUrl) {
+  if(GlobalVar.data.currentUrl == GlobalVar.data.originUrl) {
     // トップページの場合
     document.querySelector("nav.top-nav > a.top").classList.add("is-active");
-  } else if(currentUrl.includes("ranking")) {
+  } else if(GlobalVar.data.currentUrl.includes("ranking")) {
     // ランキングページの場合
     document.querySelector("nav.top-nav > a.rank").classList.add("is-active");
-
-    // 動画期間タイプ取得
-    if(currentUrl.includes("weekly")) {
-      // 週間の場合
-      currentRankingDurationType = "weekly";
-    } else if(currentUrl.includes("monthly")) {
-      // 月間の場合
-      currentRankingDurationType = "monthly";
-    } else if(currentUrl.includes("yearly")) {
-      // 年間の場合
-      currentRankingDurationType = "yearly";
-    }
-
-    // ランキングカテゴリ取得
-    if(currentUrl.includes("FILM_ANIMATION")){
-      // 映画とアニメ
-      category = "FILM_ANIMATION";
-    } else if(currentUrl.includes("AUTOS_VEHICLES")){
-      // 自動車と乗り物
-      category = "AUTOS_VEHICLES";
-    } else if(currentUrl.includes("MUSIC")){
-      // 音楽
-      category = "MUSIC";
-    } else if(currentUrl.includes("PETS_ANIMALS")){
-      // ペットと動物
-      category = "PETS_ANIMALS";
-    } else if(currentUrl.includes("SPORTS")){
-      // スポーツ
-      category = "SPORTS";
-    } else if(currentUrl.includes("TRAVEL_EVENTS")){
-      // 旅行とイベント
-      category = "TRAVEL_EVENTS";
-    } else if(currentUrl.includes("GAMING")){
-      // ゲーム
-      category = "GAMING";
-    } else if(currentUrl.includes("PEOPLE_BLOGS")){
-      // ブログ
-      category = "PEOPLE_BLOGS";
-    } else if(currentUrl.includes("COMEDY")){
-      // コメディー
-      category = "COMEDY";
-    } else if(currentUrl.includes("ENTERTAINMENT")){
-      // エンターテイメント
-      category = "ENTERTAINMENT";
-    } else if(currentUrl.includes("NEWS_POLITICS")){
-      // ニュースと政治
-      category = "NEWS_POLITICS";
-    } else if(currentUrl.includes("HOWTO_STYLE")){
-      // ハウツーとスタイル
-      category = "HOWTO_STYLE";
-    } else if(currentUrl.includes("EDUCATION")){
-      // 教育
-      category = "EDUCATION";
-    } else if(currentUrl.includes("SCIENCE_TECHNOLOGY")){
-      // 科学と技術
-      category = "SCIENCE_TECHNOLOGY";
-    } else if(currentUrl.includes("All")) {
-      // 総合
-      category = "All";
-    }
-
-    // ショート動画かどうか取得
-    if(currentUrl.includes("_short")) {
-      isShort = true;
-    }
-
-    // 動画幅
-    const videoWidth = isShort ? "short" : "full";
 
     // Xで共有リンク設定
     const title = document.querySelector("h2.panel__title").innerText;
     const dataAnalisisDate = document.querySelector("span.data_analisis_date").innerText;
-    document.querySelector("a.share-btn.x").href = "https://x.com/intent/post?text=" + title + "%0A集計期間：" + dataAnalisisDate + "%0A%0A" + "&url=" + currentUrl;
+    document.querySelector("a.share-btn.x").href = "https://x.com/intent/post?text=" + title + "%0A集計期間：" + dataAnalisisDate + "%0A%0A" + "&url=" + GlobalVar.data.currentUrl;
 
     // ページ下部の次ページリンク設定
     // URLから日付, ページ番号, カテゴリを取得
-    const match = currentUrl.match(/(20\d{6})-(\d+)/);
+    const match = GlobalVar.data.currentUrl.match(/(20\d{6})-(\d+)/);
     const pageDate = match[1];
     const pageNum = Number(match[2]);
 
@@ -121,11 +38,11 @@ async function change_disp() {
 
     // configJsonからページリストを取得する
     for(let rankingDurationTypePage of configJson.rankingDurationTypes) {
-      if(currentRankingDurationType == rankingDurationTypePage.durationType) {
+      if(GlobalVar.data.rankingDurationType[0] == rankingDurationTypePage.durationType) {
         for(let page of rankingDurationTypePage.pageList) {
           if(pageDate == page.dataGetStartTiming) {
             for(detailPage of page.detailPages) {
-              if(category == detailPage.category && isShort == detailPage.isShort) {
+              if(GlobalVar.data.category[0] == detailPage.category && GlobalVar.data.isShort == detailPage.isShort) {
                 files = detailPage.pageNameList;
                 break;
               }
@@ -178,27 +95,19 @@ async function change_disp() {
   }
 
   // パンくずリスト作成
-  buildBreadcrumb(currentRankingDurationType, category);
+  buildBreadcrumb(GlobalVar.data.rankingDurationType, GlobalVar.data.category);
 
   // サイドメニューの検索欄設定
   setupSideFilterSearch({
-    baseUrl: "/ranking"
-    , initialRankingDurationType: currentRankingDurationType
-    , initialCategory: category
-    , initialVideoWidth: videoWidth
+    baseUrl: "/ranking/index.html"
+    , initialRankingDurationType: GlobalVar.data.rankingDurationType[0]
+    , initialCategory: GlobalVar.data.category[0]
+    , initialVideoWidth: GlobalVar.data.videoWidth
   });
 
   // Googleアドセンス関連（エラー対策に最後に呼び出し）
   (adsbygoogle = window.adsbygoogle || []).push({});
 }
-
-// ページ構成jsonを取得
-async function loadJson(jsonPath) {
-  const res = await fetch(jsonPath);
-  return await res.json();
-}
-
-
 
 // パンくずリスト
 function buildBreadcrumb(rankingDurationType, category) {
@@ -210,37 +119,26 @@ function buildBreadcrumb(rankingDurationType, category) {
 
   // ranking 配下
   if (location.pathname.includes("ranking")) {
-    crumbs.push({ name: "ランキング", url: "/ranking" }); // ランキング導線の代表リンク
+    crumbs.push({ name: "ランキング", url: "/ranking/index.html" }); // ランキング導線の代表リンク
+    
+    // ランキング期間タイプ
+    crumbs.push({name: rankingDurationType[1]
+                 , url: "/ranking/index.html?duration=" + rankingDurationType[0]
+                });
 
-    if (rankingDurationType == "weekly") crumbs.push({ name: "週間" });
-    else if (rankingDurationType == "monthly") crumbs.push({ name: "月間" });
-    else if (rankingDurationType == "yearly") crumbs.push({ name: "年間" });
-
-    // カテゴリ（URL文字列ベース）
-    if (category == "FILM_ANIMATION") crumbs.push({ name: "映画とアニメ" });
-    else if (category == "AUTOS_VEHICLES") crumbs.push({ name: "自動車と乗り物" });
-    else if (category == "MUSIC") crumbs.push({ name: "音楽" });
-    else if (category == "PETS_ANIMALS") crumbs.push({ name: "ペットと動物" });
-    else if (category == "SPORTS") crumbs.push({ name: "スポーツ" });
-    else if (category == "TRAVEL_EVENTS") crumbs.push({ name: "旅行とイベント" });
-    else if (category == "GAMING") crumbs.push({ name: "ゲーム" });
-    else if (category == "PEOPLE_BLOGS") crumbs.push({ name: "ブログ" });
-    else if (category == "COMEDY") crumbs.push({ name: "コメディー" });
-    else if (category == "ENTERTAINMENT") crumbs.push({ name: "エンターテイメント" });
-    else if (category == "NEWS_POLITICS") crumbs.push({ name: "ニュースと政治" });
-    else if (category == "HOWTO_STYLE") crumbs.push({ name: "ハウツーとスタイル" });
-    else if (category == "EDUCATION") crumbs.push({ name: "教育" });
-    else if (category == "SCIENCE_TECHNOLOGY") crumbs.push({ name: "科学と技術" });
-    else if (category == "All") crumbs.push({ name: "総合" });
+    // カテゴリ
+    crumbs.push({name: GlobalVar.data.category[1]
+                 , url: "/ranking/index.html?duration=" + rankingDurationType[0] + "&category=" + GlobalVar.data.category[0]
+                });
   }
 
   // 描画
   list.innerHTML = "";
   crumbs.forEach((c, i) => {
     const li = document.createElement("li");
-    const isLast = i === crumbs.length - 1;
+    //const isLast = i === crumbs.length - 1;
 
-    if (c.url && !isLast) li.innerHTML = `<a href="${c.url}">${c.name}</a>`;
+    if (c.url) li.innerHTML = `<a href="${c.url}">${c.name}</a>`;
     else li.innerHTML = `<span>${c.name}</span>`;
 
     list.appendChild(li);
@@ -364,3 +262,44 @@ function createPopularLink(parentEle, labelName, linkUrl) {
   childEle.appendChild(textEle);
   parentEle.appendChild(childEle);
 }
+
+
+/** ============================ 共通関数 ============================ */
+/** 
+ * ページ構成jsonを取得
+ */
+async function loadJson(jsonPath) {
+  const res = await fetch(jsonPath);
+  return await res.json();
+}
+
+/**
+ * "YYYY-MM-DD HH:mm:ss" / "YYYY-MM-DDTHH:mm:ss" を
+ * タイムスタンプ(ms)に変換する
+ * 失敗時は 0 を返す
+ */
+function toTimestamp(datetimeStr) {
+  if (!datetimeStr) return 0;
+
+  try {
+    // 文字列化 → スペースをTに変換 → Date
+    const iso = String(datetimeStr).replace(" ", "T");
+    const time = new Date(iso).getTime();
+
+    return isNaN(time) ? 0 : time;
+  } catch (e) {
+    return 0;
+  }
+}
+
+/**
+ * テンプレートHTMLを読み込む
+ */
+async function loadTemplateHtml(templateHtmlPath) {
+  if (_rankLinkTpl !== null) return _rankLinkTpl;
+  const res = await fetch(templateHtmlPath, { cache: "no-cache" });
+  if (!res.ok) throw new Error(`Template fetch failed: ${res.status} ${templateHtmlPath}`);
+  _rankLinkTpl = await res.text();
+  return _rankLinkTpl;
+}
+

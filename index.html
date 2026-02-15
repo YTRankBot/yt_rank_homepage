@@ -22,11 +22,12 @@
           }
         }).then(() => {
           // 初期処理を実行
-          console.log("初期処理実行");
           return init();
         }).then(() => {
+          // 一覧作成
+          return showResult();
+        }).then(() => {
           // 最終処理実行
-          console.log("最終処理実行");
           return change_disp();
         });
 

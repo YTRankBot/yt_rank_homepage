@@ -99,7 +99,7 @@ a {color:inherit; text-decoration:none}
 }
 .top-nav__link:hover {
   border-color:var(--line);
-  background:#fafafa;
+  background:#f5f5f5;
 }
 .top-nav__link.is-active {
   background:var(--red-soft);
@@ -119,7 +119,7 @@ a {color:inherit; text-decoration:none}
   padding:6px 10px;
   border:1px solid var(--line);
   border-radius:999px;
-  background:#fafafa;
+  background:#f5f5f5;
 }
 .mini-btn {
   display:inline-flex;
@@ -162,7 +162,7 @@ a {color:inherit; text-decoration:none}
 }
 
 .share-btn:hover {
-  background:#fafafa;
+  background:#f5f5f5;
 }
 
 .share-btn__icon {
@@ -255,11 +255,11 @@ a {color:inherit; text-decoration:none}
   padding:10px 10px;
   border-radius:12px;
   border:1px solid var(--line);
-  background:#fafafa;
+  background:#fff;
 }
 .side-item b {font-weight:900}
 .side-item span {color:var(--muted); font-size:12px}
-.side-item:hover {background:#fff}
+.side-item:hover {background:#f5f5f5}
 .side-item.is-active {
   background:var(--red-soft);
   border-color:#ffd1d1;
@@ -366,7 +366,7 @@ a {color:inherit; text-decoration:none}
   border:1px dashed #cbd5e1;
   border-radius:10px;
   color:var(--muted);
-  background:#fafafa;
+  background:#f5f5f5;
 }
 
 .pill-row {
@@ -377,11 +377,14 @@ a {color:inherit; text-decoration:none}
 .pill {
   padding:8px 10px;
   border-radius:999px;
-  border:1px solid #ffd1d1;
-  background:var(--red-soft);
-  color:var(--red-dark);
-  font-weight:900;
-  font-size:12px;
+  border:1px solid #ddd;
+  background:#fff;
+  font-weight:700;
+  font-size:13px;
+}
+
+.pill:hover {
+  background:#f5f5f5;
 }
 
 /* Ads */
@@ -503,7 +506,7 @@ div.ad-160x600 {display: none}
 }
 
 .weekly-pick:hover{
-  background:#fafafa;
+  background:#f5f5f5;
   border-color:#ffd1d1;
 }
 
@@ -589,7 +592,7 @@ div.ad-160x600 {display: none}
 }
 
 .rank-card:hover{
-  background:#fafafa;
+  background:#f5f5f5;
   border-color:#ffd1d1;
 }
 
@@ -638,7 +641,7 @@ div.ad-160x600 {display: none}
   object-fit:cover;
   border-radius:12px;
   border:1px solid var(--line);
-  background:#fafafa;
+  background:#f5f5f5;
 }
 
 .rank-body{
@@ -758,7 +761,7 @@ div.ad-160x600 {display: none}
   background:#fff;
   font-weight:900;
 }
-.pager-btn:hover{background:#fafafa}
+.pager-btn:hover{background:#f5f5f5}
 .pager-btn.is-disabled{
   opacity:.45;
   pointer-events:none;
@@ -781,7 +784,7 @@ div.ad-160x600 {display: none}
   background:#fff;
   font-weight:1000;
 }
-.pager-page:hover{background:#fafafa}
+.pager-page:hover{background:#f5f5f5}
 .pager-page.is-active{
   background:var(--red-soft);
   border-color:#ffd1d1;
