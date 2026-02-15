@@ -20,12 +20,7 @@ async function change_disp() {
   } else if(GlobalVar.data.currentUrl.includes("ranking")) {
     // ランキングページの場合
     document.querySelector("nav.top-nav > a.rank").classList.add("is-active");
-
-    // Xで共有リンク設定
-    const title = document.querySelector("h2.panel__title").innerText;
-    const dataAnalisisDate = document.querySelector("span.data_analisis_date").innerText;
-    document.querySelector("a.share-btn.x").href = "https://x.com/intent/post?text=" + title + "%0A集計期間：" + dataAnalisisDate + "%0A%0A" + "&url=" + GlobalVar.data.currentUrl;
-
+    
     // ページ下部の次ページリンク設定
     // URLから日付, ページ番号, カテゴリを取得
     const match = GlobalVar.data.currentUrl.match(/(20\d{6})-(\d+)/);
@@ -262,6 +257,42 @@ function createPopularLink(parentEle, labelName, linkUrl) {
   parentEle.appendChild(childEle);
 }
 
+/** ============================ X関連 ============================ */
+function postToX(){
+
+  // Xで共有リンク情報設定
+  const title = document.querySelector("h2.panel__title").innerText;
+  const dataAnalisisDate = document.querySelector("span.data_analisis_date").innerText;
+  const message = encodeURIComponent(title
+                                     + "\n" + "集計期間：" + dataAnalisisDate
+                                     + "\n"
+                                     + "\n");
+  const url = GlobalVar.data.currentUrl;
+
+  // アプリ用
+  const appUrl = "twitter://post?message=" + message + url;
+
+  // Webフォールバック
+  const webUrl = "https://x.com/intent/post?text=" + message + "&url=" + url;
+
+  // アプリ起動を試す
+  const now = Date.now();
+  location.href = appUrl;
+  
+  const timer = 800;
+
+  // スマホの場合は時間を10秒にする
+  if(window.innerWidth <= 680) {
+    timer = 10000;
+  }
+
+  // 起動しなかった場合Webへ
+  setTimeout(function(){
+    if(Date.now() - now < timer){
+      window.open(webUrl, "_blank");
+    }
+  }, 500);
+}
 
 /** ============================ 共通関数 ============================ */
 /** 
