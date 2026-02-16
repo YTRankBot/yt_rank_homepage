@@ -13,6 +13,8 @@ async function generateLatestPicks() {
   const weeklyPicksDom = document.querySelector("div#weekly-picks");
   
   let allCardsHtml = "";
+  let max = 7;
+  let cnt = 1;
   
   for(const data of latestWeeklyDetails) {
     allCardsHtml += replaceTemplate(cardTemplate, {
@@ -25,6 +27,10 @@ async function generateLatestPicks() {
       , bottom_rank : data.bottomRank
       , comment : data.rankingComment
     }) + "\r\n";
+    
+    if(cnt++ >= max) {
+      break;
+    }
   }
   
   weeklyPicksDom.innerHTML = allCardsHtml.trim();
@@ -43,6 +49,7 @@ async function generateLatestPicks() {
   const monthlyPicksDom = document.querySelector("div#monthly-picks");
   
   allCardsHtml = "";
+  cnt = 1;
   
   for(const data of latestMonthlyDetails) {
     allCardsHtml += replaceTemplate(cardTemplate, {
@@ -55,14 +62,16 @@ async function generateLatestPicks() {
       , bottom_rank : data.bottomRank
       , comment : data.rankingComment
     }) + "\r\n";
+    
+    if(cnt++ >= max) {
+      break;
+    }
   }
   
   monthlyPicksDom.innerHTML = allCardsHtml.trim();
   
   const monthlyEndDate = latestMonthlyDetails[0].dataAnalisisEndDatetime.split(" ")[0].replaceAll("-", "/");
   const monthlyStartDate = latestMonthlyDetails[0].dataAnalisisStartDatetime.split(" ")[0].replaceAll("-", "/");
-  
-  console.log(monthlyEndDate);
   
   // 期間を更新
   document.querySelector("section.panel.monthly_picks_panel span.data_analisis_date").innerHTML = monthlyStartDate + " ～ " + monthlyEndDate;

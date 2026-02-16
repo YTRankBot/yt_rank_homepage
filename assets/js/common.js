@@ -17,77 +17,83 @@ async function change_disp() {
   if(GlobalVar.data.currentUrl == GlobalVar.data.originUrl) {
     // トップページの場合
     document.querySelector("nav.top-nav > a.top").classList.add("is-active");
-  } else if(GlobalVar.data.currentUrl.includes("ranking")) {
+  } else if(GlobalVar.data.currentUrl.includes("/ranking")) {
     // ランキングページの場合
     document.querySelector("nav.top-nav > a.rank").classList.add("is-active");
     
-    // ページ下部の次ページリンク設定
-    // URLから日付, ページ番号, カテゴリを取得
-    const match = GlobalVar.data.currentUrl.match(/(20\d{4,6})-(\d+)/);
-    const pageDate = match[1];
-    const pageNum = Number(match[2]);
+    if(GlobalVar.data.currentUrl.includes("_ranking")) {
+      
+      // ランキング発表ページの場合
+      // ページ下部の次ページリンク設定
+      // URLから日付, ページ番号, カテゴリを取得
+      const match = GlobalVar.data.currentUrl.match(/(20\d{4,6})-(\d+)/);
+      const pageDate = match[1];
+      const pageNum = Number(match[2]);
 
-    // ページ構成jsonを読み込み
-    const configJson = await loadJson("/assets/json/ranking_page_config.json");
-    let files = [];
+      // ページ構成jsonを読み込み
+      const configJson = await loadJson("/assets/json/ranking_page_config.json");
+      let files = [];
 
-    // configJsonからページリストを取得する
-    for(let rankingDurationTypePage of configJson.rankingDurationTypes) {
-      if(GlobalVar.data.rankingDurationType[0] == rankingDurationTypePage.durationType) {
-        for(let page of rankingDurationTypePage.pageList) {
-          if(pageDate == page.dataGetStartTiming) {
-            for(detailPage of page.detailPages) {
-              if(GlobalVar.data.category[0] == detailPage.categoryId && GlobalVar.data.isShort == detailPage.isShort) {
-                files = detailPage.pageNameList;
-                break;
+      // configJsonからページリストを取得する
+      for(let rankingDurationTypePage of configJson.rankingDurationTypes) {
+        if(GlobalVar.data.rankingDurationType[0] == rankingDurationTypePage.durationType) {
+          for(let page of rankingDurationTypePage.pageList) {
+            if(pageDate == page.dataGetStartTiming) {
+              for(detailPage of page.detailPages) {
+                if(GlobalVar.data.category[0] == detailPage.categoryId && GlobalVar.data.isShort == detailPage.isShort) {
+                  files = detailPage.pageNameList;
+                  break;
+                }
               }
             }
           }
         }
       }
-    }
 
-    console.log("ページ番号：" + pageNum);
-    // 前へボタン設定
-    if(pageNum == 1) {
-      //先頭ページの場合
-      document.querySelector("a.pager-btn.previous").classList.add("is-disabled");
-      document.querySelector("a.pager-btn.previous").setAttribute("aria-disabled", "true");
-    } else {
-      // 先頭ページではない場合
-      document.querySelector("a.pager-btn.previous").href = "./" + files[(pageNum - 1) - 1];
-    }
-
-    // 次へボタン設定
-    if(pageNum == files.length) {
-      //末尾ページの場合
-      document.querySelector("a.pager-btn.next").classList.add("is-disabled");
-      document.querySelector("a.pager-btn.next").setAttribute("aria-disabled", "true");
-    } else {
-      // 末尾ページではない場合
-      document.querySelector("a.pager-btn.next").href = "./" + files[(pageNum - 1) + 1];
-    }
-
-    // 各ページ番号ボタン要素を取得
-    const pageBtnEles = document.querySelectorAll("div.pager-pages > a.pager-page");
-
-    // 各ページ番号ボタン設定
-    for(let i = 0; i < pageBtnEles.length; i++) {
-      // ページ数が少ない場合は後続の不要なページ番号を削除する
-      if(files.length < i+1) {
-        pageBtnEles[i].remove();
-        continue;
+      // 前へボタン設定
+      if(pageNum == 1) {
+        //先頭ページの場合
+        document.querySelector("a.pager-btn.previous").classList.add("is-disabled");
+        document.querySelector("a.pager-btn.previous").setAttribute("aria-disabled", "true");
+      } else {
+        // 先頭ページではない場合
+        document.querySelector("a.pager-btn.previous").href = "./" + files[(pageNum - 1) - 1];
       }
 
-      // 自身のページ番号ボタンの場合
-      if(pageNum == i+1) {
-        pageBtnEles[i].classList.add("is-active");
+      // 次へボタン設定
+      if(pageNum == files.length) {
+        //末尾ページの場合
+        document.querySelector("a.pager-btn.next").classList.add("is-disabled");
+        document.querySelector("a.pager-btn.next").setAttribute("aria-disabled", "true");
+      } else {
+        // 末尾ページではない場合
+        document.querySelector("a.pager-btn.next").href = "./" + files[(pageNum - 1) + 1];
       }
 
-      // URLを設定
-      pageBtnEles[i].href = "./" + files[i];
+      // 各ページ番号ボタン要素を取得
+      const pageBtnEles = document.querySelectorAll("div.pager-pages > a.pager-page");
+
+      // 各ページ番号ボタン設定
+      for(let i = 0; i < pageBtnEles.length; i++) {
+        // ページ数が少ない場合は後続の不要なページ番号を削除する
+        if(files.length < i+1) {
+          pageBtnEles[i].remove();
+          continue;
+        }
+
+        // 自身のページ番号ボタンの場合
+        if(pageNum == i+1) {
+          pageBtnEles[i].classList.add("is-active");
+        }
+
+        // URLを設定
+        pageBtnEles[i].href = "./" + files[i];
+      }
+    } else {
+      // 検索ページの場合
     }
   }
+
 
   // パンくずリスト作成
   buildBreadcrumb(GlobalVar.data.rankingDurationType, GlobalVar.data.category);
@@ -113,17 +119,32 @@ function buildBreadcrumb(rankingDurationType, category) {
   crumbs.push({ name: "トップ", url: "/" });
 
   // ranking 配下
-  if (location.pathname.includes("ranking")) {
+  if (location.pathname.includes("/ranking")) {
     
     // ランキング期間タイプ
-    crumbs.push({name: "ランキング（" + rankingDurationType[1] + "）"
-                 , url: "/ranking/index.html?duration=" + rankingDurationType[0]
-                });
+    if(rankingDurationType.length != 0) {
+      crumbs.push({name: "ランキング（" + rankingDurationType[1] + "）"
+                   , url: "/ranking/index.html?duration=" + rankingDurationType[0]
+                  });
+    } else {
+      crumbs.push({name: "ランキング"
+                   , url: ""
+                  });
+    }
 
     // カテゴリ
-    crumbs.push({name: GlobalVar.data.category[1]
-                 , url: "/ranking/index.html?duration=" + rankingDurationType[0] + "&category=" + GlobalVar.data.category[0]
-                });
+    if(category.length != 0) {
+      crumbs.push({name: GlobalVar.data.category[1]
+                   , url: "/ranking/index.html?duration=" + rankingDurationType[0] + "&category=" + category[0]
+                  });
+    }
+
+    // ランキングページ
+    if(location.pathname.includes("_ranking")) {
+      crumbs.push({name: ""
+                   , url: ""
+                  });
+    }
   }
 
   // 描画

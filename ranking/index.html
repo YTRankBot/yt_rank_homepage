@@ -11,6 +11,7 @@
     <!-- javascript -->
     <script src="/assets/js/init.js"></script>
     <script id="org_js">
+        
         Promise.all([
           fetch("/assets/template/common.html", { cache: "no-store" }).then(r => r.text()),
           fetch("./index_main.html", { cache: "no-store" }).then(r => r.text())
@@ -24,10 +25,11 @@
           return init();
         }).then(() => {
           // 一覧作成
-          return init();
+          //return generateLatestPicks();
         }).then(() => {
           // 最終処理実行
-          change_disp();
+          return change_disp();
         });
+
     </script>
 </html>
