@@ -23,7 +23,7 @@ async function change_disp() {
     
     // ページ下部の次ページリンク設定
     // URLから日付, ページ番号, カテゴリを取得
-    const match = GlobalVar.data.currentUrl.match(/(20\d{6})-(\d+)/);
+    const match = GlobalVar.data.currentUrl.match(/(20\d{4,6})-(\d+)/);
     const pageDate = match[1];
     const pageNum = Number(match[2]);
 

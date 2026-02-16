@@ -1,15 +1,17 @@
-async function generateLatestPics() {
+async function generateLatestPicks() {
   // ページ構成jsonを読み込み
   const configJson = await loadJson("/assets/json/ranking_page_config.json");
   
+  // テンプレート読み込み
+  const cardTemplate = await loadTemplateHtml("/assets/template/search-card.html");
+  
+  // ■ 週間ランキング一覧設定
   // Jsonから最新データ一覧のみ抽出
   const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly");
   
   // 週間再生数ランキング一覧枠要素
-  const weeklyPicsDom = document.querySelector("div#weekly-picks");
+  const weeklyPicksDom = document.querySelector("div#weekly-picks");
   
-  // テンプレート読み込み
-  const cardTemplate = await loadTemplateHtml("/assets/template/search-card.html");
   let allCardsHtml = "";
   
   for(const data of latestWeeklyDetails) {
@@ -25,13 +27,49 @@ async function generateLatestPics() {
     }) + "\r\n";
   }
   
-  weeklyPicsDom.innerHTML = allCardsHtml.trim();
+  weeklyPicksDom.innerHTML = allCardsHtml.trim();
   
-  const endDate = latestWeeklyDetails[0].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
-  const startDate = latestWeeklyDetails[latestWeeklyDetails.length - 1].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
+  const weeklyEndDate = latestWeeklyDetails[0].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
+  const weeklyStartDate = latestWeeklyDetails[latestWeeklyDetails.length - 1].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
   
   // 期間を更新
-  document.querySelector("section.panel.weekly_pics span.data_analisis_date").innerHTML = startDate + " ～ " + endDate;
+  document.querySelector("section.panel.weekly_picks_panel span.data_analisis_date").innerHTML = weeklyStartDate + " ～ " + weeklyEndDate;
+
+  // ■ 月間ランキング一覧設定
+  // Jsonから最新データ一覧のみ抽出
+  const latestMonthlyDetails = getLatestDetailPages(configJson, "monthly");
+  
+  // 週間再生数ランキング一覧枠要素
+  const monthlyPicksDom = document.querySelector("div#monthly-picks");
+  
+  allCardsHtml = "";
+  
+  for(const data of latestMonthlyDetails) {
+    allCardsHtml += replaceTemplate(cardTemplate, {
+      page_link : "/ranking/monthly/" + data.pageNameList[0]
+      , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
+      , durationType : "月間"
+      , category : data.categoryName
+      , shortTag : (data.isShort ? "<ショート>" : "")
+      , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
+      , bottom_rank : data.bottomRank
+      , comment : data.rankingComment
+    }) + "\r\n";
+  }
+  
+  monthlyPicksDom.innerHTML = allCardsHtml.trim();
+  
+  const monthlyEndDate = latestMonthlyDetails[0].dataAnalisisEndDatetime.split(" ")[0].replaceAll("-", "/");
+  const monthlyStartDate = latestMonthlyDetails[0].dataAnalisisStartDatetime.split(" ")[0].replaceAll("-", "/");
+  
+  console.log(monthlyEndDate);
+  
+  // 期間を更新
+  document.querySelector("section.panel.monthly_picks_panel span.data_analisis_date").innerHTML = monthlyStartDate + " ～ " + monthlyEndDate;
+  
+  // 月更新
+  const month = Number(latestMonthlyDetails[0].dataAnalisisStartDatetime.split(" ")[0].split("-")[1]);
+  document.querySelector("section.panel.monthly_picks_panel .month").innerHTML = month;
 }
 
 /**
