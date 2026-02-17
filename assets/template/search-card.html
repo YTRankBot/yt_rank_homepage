@@ -1,13 +1,14 @@
 <a class="ranking-pick" href="{{page_link}}">
-  <img class="ranking-pick__img"
+  <img class="ranking-pick__img {{page_position}}"
        src="{{img_link}}"
-       alt="{{durationType}}再生数ランキング（{{category}}{{shortTag}}）" />
+       alt="{{durationTypeName}}再生数ランキング（{{category}}{{shortTag}}）" />
   <div class="ranking-pick__body">
     <div class="ranking-pick__topline">
+      <span class="ranking-pick__badge_{{durationTypeId}}">{{durationTypeName}}</span>
       <span class="ranking-pick__badge">{{category}}{{shortTag}}</span>
       <span class="ranking-pick__meta">集計日：{{dataGetDate}}</span>
     </div>
-    <div class="ranking-pick__title">{{durationType}}再生数ランキング TOP{{bottom_rank}}</div>
+    <div class="ranking-pick__title">{{durationTypeName}}再生数ランキング TOP{{bottom_rank}}</div>
     <div class="ranking-pick__desc">
       {{comment}}
     </div>

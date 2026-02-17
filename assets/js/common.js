@@ -96,7 +96,7 @@ async function change_disp() {
 
 
   // パンくずリスト作成
-  buildBreadcrumb(GlobalVar.data.rankingDurationType, GlobalVar.data.category);
+  buildBreadcrumb(GlobalVar.data.rankingDurationType, GlobalVar.data.category, GlobalVar.data.videoWidth);
 
   // サイドメニューの検索欄設定
   setupSideFilterSearch({
@@ -111,10 +111,16 @@ async function change_disp() {
 }
 
 // パンくずリスト
-function buildBreadcrumb(rankingDurationType, category) {
+function buildBreadcrumb(rankingDurationType, category, videoWidth) {
   const list = document.getElementById("breadcrumb");
   if (!list) return;
-
+  
+  const tmpDurationTypeId = (rankingDurationType === undefined || rankingDurationType.length == 0) ? "" : rankingDurationType[0];
+  const tmpDurationTypeName = (rankingDurationType === undefined || rankingDurationType.length == 0) ? "" : rankingDurationType[1];
+  const tmpCategoryId = (category === undefined || category.length == 0) ? "" : category[0];
+  const tmpCategoryName = (category === undefined || category.length == 0) ? "" : category[1];
+  const tmpVideoWidth = (videoWidth === undefined || videoWidth.length == 0) ? "" : videoWidth;
+  
   const crumbs = [];
   crumbs.push({ name: "トップ", url: "/" });
 
@@ -122,28 +128,29 @@ function buildBreadcrumb(rankingDurationType, category) {
   if (location.pathname.includes("/ranking")) {
     
     // ランキング期間タイプ
-    if(rankingDurationType.length != 0) {
-      crumbs.push({name: "ランキング（" + rankingDurationType[1] + "）"
-                   , url: "/ranking/index.html?duration=" + rankingDurationType[0]
+    if(tmpDurationTypeId.length != 0) {
+      crumbs.push({name: "ランキング（" + tmpDurationTypeName + "）"
+                   , url: "/ranking/index.html?duration=" + tmpDurationTypeId
                   });
     } else {
       crumbs.push({name: "ランキング"
-                   , url: ""
+                   , url: "/ranking/index.html"
                   });
     }
 
     // カテゴリ
-    if(category.length != 0) {
-      crumbs.push({name: GlobalVar.data.category[1]
-                   , url: "/ranking/index.html?duration=" + rankingDurationType[0] + "&category=" + category[0]
-                  });
-    }
-
-    // ランキングページ
-    if(location.pathname.includes("_ranking")) {
-      crumbs.push({name: ""
-                   , url: ""
-                  });
+    if(tmpCategoryId.length != 0) {
+      if(location.pathname.includes("_ranking")) {
+        // ランキング詳細ページの場合
+        crumbs.push({name: tmpCategoryName
+                     , url: "/ranking/index.html?duration=" + tmpDurationTypeId + "&category=" + tmpCategoryId + "&videoWidth=" + tmpVideoWidth
+                    });
+      } else {
+        // それ以外
+        crumbs.push({name: tmpCategoryName
+                     , url: GlobalVar.data.currentUrl
+                    });
+      }
     }
   }
 
@@ -163,7 +170,7 @@ function buildBreadcrumb(rankingDurationType, category) {
 /**
  * 検索機能
  */
-function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, initialCategory = null, initialVideoWidth = false }) {
+function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, initialCategory = null, initialVideoWidth = null }) {
 
   // --- 対象要素の取得 ---
   const durationTags = [...document.querySelectorAll("div.side-list.duration .tag[data-duration]")];
@@ -225,37 +232,60 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
     // クリックで選択
     durationTags.forEach(tag => {
       tag.addEventListener("click", () => {
-        selectOne(durationTags, tag);
-        selectedDuration = tag.dataset.duration;
+        if(tag.classList.contains("is-active")) {
+          // すでに選択されている場合、選択を外す
+          tag.classList.remove("is-active")
+          selectedDuration = null;
+        } else {
+          selectOne(durationTags, tag);
+          selectedDuration = tag.dataset.duration;
+        }
       });
     });
 
     categoryTags.forEach(tag => {
       tag.addEventListener("click", () => {
-        selectOne(categoryTags, tag);
-        selectedCategory = tag.dataset.category;
+        if(tag.classList.contains("is-active")) {
+          // すでに選択されている場合、選択を外す
+          tag.classList.remove("is-active")
+          selectedCategory = null;
+        } else {
+          selectOne(categoryTags, tag);
+          selectedCategory = tag.dataset.category;
+        }
       });
     });
 
     videoWidthTags.forEach(tag => {
       tag.addEventListener("click", () => {
-        selectOne(videoWidthTags, tag);
-        selectedVideoWidth = tag.dataset.videoWidth;
+        if(tag.classList.contains("is-active")) {
+          // すでに選択されている場合、選択を外す
+          tag.classList.remove("is-active")
+          selectedVideoWidth = null;
+        } else {
+          selectOne(videoWidthTags, tag);
+          selectedVideoWidth = tag.dataset.videoWidth;
+        }
       });
     });
   }
 
   // 検索ボタン：選択値をクエリにして遷移
   searchBtn.addEventListener("click", () => {
-    if(!selectedDuration || !selectedCategory || !selectedVideoWidth) {
-      alert("カテゴリと期間を選択してください");
-      return;
-    }
 
     const url = new URL(baseUrl, location.origin);
-    url.searchParams.set("duration", selectedDuration);
-    url.searchParams.set("category", selectedCategory);
-    url.searchParams.set("videoWidth", selectedVideoWidth);
+    
+    if(selectedDuration != null) {
+      url.searchParams.set("duration", selectedDuration);
+    }
+    
+    if(selectedCategory != null) {
+      url.searchParams.set("category", selectedCategory);
+    }
+    
+    if(selectedVideoWidth != null) {
+      url.searchParams.set("videoWidth", selectedVideoWidth);
+    }
 
     location.href = url.toString();
   });
@@ -352,3 +382,31 @@ async function loadTemplateHtml(templateHtmlPath) {
   return await res.text();
 }
 
+/**
+ * ランキング期間タイプ名を取得する
+ */
+function getDurationTypeName(durationTypeId) {
+  let result = "";
+  
+  if(durationTypeId === "weekly") {
+    result = "週間";
+  } else if(durationTypeId === "monthly") {
+    result = "月間";
+  } else if(durationTypeId === "yearly") {
+    result = "年間";
+  }
+  
+  return result;
+}
+
+/*
+ * URLの指定のパラメータを書き換え（なければ追加）
+ */
+function changeParam(url, paramName, paramValue) {
+  const tmpUrl = new URL(url);
+
+  // page を上書き（無ければ追加）
+  tmpUrl.searchParams.set(paramName, paramValue);
+
+  return tmpUrl.toString();
+}

@@ -511,11 +511,22 @@ div.ad-160x600 {display: none}
 }
 
 .ranking-pick__img{
-  width:100%;
+  width:75%;
   height:auto;
   border-radius:10px;
   border:2px solid var(--red);
   background:#fff;
+  text-align:center;
+}
+
+/* トップページのみ画像にモザイクを設定 */
+.ranking-pick__img.top{
+  filter: blur(2px);
+}
+
+/* 検索結果画面のみ画像にモザイクを設定 */
+.ranking-pick__img.search{
+  filter: blur(1px);
 }
 
 .ranking-pick__body{
@@ -536,11 +547,50 @@ div.ad-160x600 {display: none}
   display:inline-flex;
   align-items:center;
   height:24px;
-  padding:0 10px;
+  padding:0 5px;
   border-radius:999px;
   background:var(--red-soft);
   border:1px solid #ffd1d1;
   color:var(--red-dark);
+  font-weight:900;
+  font-size:12px;
+}
+
+.ranking-pick__badge_weekly{
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#f2f7ff;
+  border:1px solid #cfe3ff;
+  color:#2f5fb6;
+  font-weight:900;
+  font-size:12px;
+}
+
+.ranking-pick__badge_monthly{
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#f2fff4;
+  border:1px solid #cfeecf;
+  color:#2f8f46;
+  font-weight:900;
+  font-size:12px;
+}
+
+.ranking-pick__badge_yearly{
+  display:inline-flex;
+  align-items:center;
+  height:24px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#fffbea;
+  border:1px solid #ffe9b3;
+  color:#9a7600;
   font-weight:900;
   font-size:12px;
 }
@@ -565,6 +615,7 @@ div.ad-160x600 {display: none}
   margin-top:auto;
   font-weight:900;
   color:var(--red-dark);
+  text-align: right;
 }
 
 /* ===== ランキングページ用 ===== */
@@ -908,6 +959,10 @@ div.ad-160x600 {display: none}
   
   .share-btn.x{
     font-size: 10px;
+  }
+  
+  .ranking-pick__img{
+    width: 50%;
   }
 }
 

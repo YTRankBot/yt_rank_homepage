@@ -109,6 +109,14 @@ function init() {
       GlobalVar.data.isShort = false;
       GlobalVar.data.videoWidth = "full";
     }
+  } else {
+    if(GlobalVar.data.currentUrl.includes("videoWidth=short")) {
+      GlobalVar.data.isShort = true;
+      GlobalVar.data.videoWidth = "short";
+    } else if(GlobalVar.data.currentUrl.includes("videoWidth=full")) {
+      GlobalVar.data.isShort = false;
+      GlobalVar.data.videoWidth = "full";
+    }
   }
   
   // 既存スクリプト位置

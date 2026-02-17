@@ -1,3 +1,6 @@
+/**
+ * 最新ピックアップ一覧を生成（トップページ用）
+ */
 async function generateLatestPicks() {
   // ページ構成jsonを読み込み
   const configJson = await loadJson("/assets/json/ranking_page_config.json");
@@ -18,9 +21,11 @@ async function generateLatestPicks() {
   
   for(const data of latestWeeklyDetails) {
     allCardsHtml += replaceTemplate(cardTemplate, {
-      page_link : "/ranking/weekly/" + data.pageNameList[0]
+      page_link : "/ranking/weekly/" + data.pageNameList[data.pageNameList.length - 1]
+      , page_position : "top"
       , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
-      , durationType : "週間"
+      , durationTypeId : "weekly"
+      , durationTypeName : "週間"
       , category : data.categoryName
       , shortTag : (data.isShort ? "<ショート>" : "")
       , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
@@ -45,7 +50,7 @@ async function generateLatestPicks() {
   // Jsonから最新データ一覧のみ抽出
   const latestMonthlyDetails = getLatestDetailPages(configJson, "monthly");
   
-  // 週間再生数ランキング一覧枠要素
+  // 月間再生数ランキング一覧枠要素
   const monthlyPicksDom = document.querySelector("div#monthly-picks");
   
   allCardsHtml = "";
@@ -53,9 +58,11 @@ async function generateLatestPicks() {
   
   for(const data of latestMonthlyDetails) {
     allCardsHtml += replaceTemplate(cardTemplate, {
-      page_link : "/ranking/monthly/" + data.pageNameList[0]
+      page_link : "/ranking/monthly/" + data.pageNameList[data.pageNameList.length - 1]
       , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
-      , durationType : "月間"
+      , page_position : "top"
+      , durationTypeId : "monthly"
+      , durationTypeName : "月間"
       , category : data.categoryName
       , shortTag : (data.isShort ? "<ショート>" : "")
       , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
@@ -80,6 +87,230 @@ async function generateLatestPicks() {
   const month = Number(latestMonthlyDetails[0].dataAnalisisStartDatetime.split(" ")[0].split("-")[1]);
   document.querySelector("section.panel.monthly_picks_panel .month").innerHTML = month;
 }
+
+/**
+ * 検索条件でのピックアップ一覧を表示する
+ */
+async function generateSearchPicks() {
+  // パラメータを取得する
+  const params = new URLSearchParams(window.location.search);
+  const duration = params.get("duration");
+  const category = params.get("category");
+  const videoWidth = params.get("videoWidth");
+  const pageNum = params.get("page") != null ? Number(params.get("page")) : 1;
+  
+  // ページ構成jsonを読み込み
+  const configJson = await loadJson("/assets/json/ranking_page_config.json");
+  
+  // ページ構成抽出用
+  let allDetails = [];
+  
+  // 検索条件：ランキング期間タイプ
+  if(duration != null && duration.length > 0) {
+    // ランキング期間タイプの指定がある場合
+    allDetails.push(...getDetailPagesFilteredDurationType(configJson, duration));
+  } else {
+    // ランキング期間タイプの指定がない場合
+    const allDurationTypes = ["weekly", "monthly", "yearly"];
+    
+    for(dt of allDurationTypes) {
+      let data = getDetailPagesFilteredDurationType(configJson, dt);
+      if(data != null && data.length > 0) {
+        allDetails.push(...data);
+      }
+    }
+  }
+  
+  // 検索条件：カテゴリ
+  if(category != null && category.length > 0) {
+    // カテゴリの指定がある場合
+    allDetails = allDetails.filter(d => d.categoryId === category);
+  }
+  
+  // 検索条件：動画幅
+  if(videoWidth != null && videoWidth.length > 0) {
+    if(videoWidth === "short") {
+      // ショート動画
+      allDetails = allDetails.filter(d => d.isShort === true);
+    } else if(videoWidth === "full") {
+      // フル動画
+      allDetails = allDetails.filter(d => d.isShort === false);
+    }
+  }
+  
+  // データ取得日時の降順（新しい順）に並び替えて取得
+  allDetails = [...allDetails].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
+  
+  // 1ページ内の最大表示要素数
+  const MAX_DISPLAY_ELEMENT = 7;
+  
+  // 最大ページ数（余りがある場合は、1追加）
+  const max_page = Math.ceil(allDetails.length / MAX_DISPLAY_ELEMENT);
+  
+  // 指定したページのランキングデータ
+  let selectPageDetails = [];
+  
+  // 検索条件：ページ
+  selectPageDetails = getPageData(allDetails, pageNum, MAX_DISPLAY_ELEMENT);
+
+
+  // ■ ランキング一覧作成
+  // テンプレート読み込み
+  const cardTemplate = await loadTemplateHtml("/assets/template/search-card.html");
+  
+  // 検索結果表示枠要素
+  const searchRankingPicksDom = document.querySelector("div#search-ranking-picks");
+  
+  let allCardsHtml = "";
+  
+  for(const data of selectPageDetails) {
+    allCardsHtml += replaceTemplate(cardTemplate, {
+      page_link : "/ranking/" + data.durationType + "/" + data.pageNameList[data.pageNameList.length - 1]
+      , page_position : "search"
+      , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
+      , durationTypeId : data.durationType
+      , durationTypeName : getDurationTypeName(data.durationType)
+      , category : data.categoryName
+      , shortTag : (data.isShort ? "<ショート>" : "")
+      , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
+      , bottom_rank : data.bottomRank
+      , comment : data.rankingComment
+    }) + "\r\n";
+  }
+
+  if(selectPageDetails != null && selectPageDetails.length != 0) {
+    searchRankingPicksDom.innerHTML = allCardsHtml.trim();
+  } else {
+    // 検索結果が0件の場合
+    searchRankingPicksDom.innerHTML = "データがありません。検索条件を変更してください。";
+  }
+  
+  // 総ページ数
+  const totalPages = Math.ceil(allDetails.length / MAX_DISPLAY_ELEMENT);
+  
+  // ページ番号設定
+  document.querySelector("div.pager-note b.display_page").innerHTML = pageNum;
+  
+  // 最大ページ数設定
+  document.querySelector("div.pager-note b.max_page").innerHTML = totalPages;
+  
+  // ページ送り設定
+  // 前へボタン設定
+  if(pageNum == 1) {
+    //先頭ページの場合
+    document.querySelector("a.pager-btn.previous").classList.add("is-disabled");
+    document.querySelector("a.pager-btn.previous").setAttribute("aria-disabled", "true");
+  } else {
+    // 先頭ページではない場合
+    document.querySelector("a.pager-btn.previous").href = changeParam(GlobalVar.data.currentUrl, "page", pageNum - 1);
+  }
+
+  // 次へボタン設定
+  if(pageNum == totalPages || totalPages == 0) {
+    //末尾ページの場合
+    document.querySelector("a.pager-btn.next").classList.add("is-disabled");
+    document.querySelector("a.pager-btn.next").setAttribute("aria-disabled", "true");
+  } else {
+    // 末尾ページではない場合
+    document.querySelector("a.pager-btn.next").href = changeParam(GlobalVar.data.currentUrl, "page", pageNum + 1);
+  }
+  
+  // 番号ボタン
+  if(totalPages <= 6) {
+    
+    const pageBtnsAll = document.querySelectorAll("div.pager-pages a.pager-page");
+    
+    // 全体が6ページ以内の場合
+    for(let i = 0; i < 6; i++) {
+      if(totalPages >= i+1) {
+        pageBtnsAll[i].href = changeParam(GlobalVar.data.currentUrl, "page", i + 1);
+        pageBtnsAll[i].innerHTML = i + 1;
+      } else {
+        pageBtnsAll[i].remove();
+      }
+    }
+  } else {
+    // 全体が7ページ以上の場合
+    // 先頭ページボタン設定
+    document.querySelector("div.pager-pages a.pager-page.first").href = changeParam(GlobalVar.data.currentUrl, "page", 1);
+    document.querySelector("div.pager-pages a.pager-page.first").innerHTML = 1;
+        
+    // 最終ページボタン設定
+    document.querySelector("div.pager-pages a.pager-page.last").href = changeParam(GlobalVar.data.currentUrl, "page", totalPages);
+    document.querySelector("div.pager-pages a.pager-page.last").innerHTML = totalPages;
+    
+    // 中間ページボタン
+    const middlePageBtns = document.querySelectorAll("div.pager-pages a.pager-page.middle");
+    
+    if(pageNum - 1 < 3) {
+      // 現在ページが先頭ページから3ページ以内の場合
+      for(let i = 0; i < middlePageBtns.length; i++) {
+        middlePageBtns[i].href = changeParam(GlobalVar.data.currentUrl, "page", i + 2);
+        middlePageBtns[i].innerHTML = i + 2;
+      }
+    } else if(totalPages - pageNum < 3) {
+      // 現在ページが最終ページから3ページ以内の場合
+      let num = totalPages - middlePageBtns.length;
+      
+      for(let i = 0; i < middlePageBtns.length; i++) {
+        if(num == totalPages) continue;
+        middlePageBtns[i].href = changeParam(GlobalVar.data.currentUrl, "page", num);
+        middlePageBtns[i].innerHTML = num;
+        num += 1;
+      }
+    } else {
+      // それ以外の場合
+      let num = pageNum - 1;
+
+      for(let i = 0; i < middlePageBtns.length; i++) {
+        middlePageBtns[i].href = changeParam(GlobalVar.data.currentUrl, "page", num);
+        middlePageBtns[i].innerHTML = num;
+        num += 1;
+      }
+    }
+  }
+  
+  // 全番号ボタン要素（再取得）
+  const pageBtnsAll = document.querySelectorAll("div.pager-pages a.pager-page");
+  
+  // ボタンアクティブ設定
+  for(const pageBtn of pageBtnsAll) {
+    if(pageBtn.innerHTML == pageNum) {
+      pageBtn.classList.add("is-active");
+      break;
+    }
+  }
+  
+  
+  // 現在ページが先頭ページから3ページ以内の場合（もしくは全体が6ページ以内の場合）
+  if(pageNum - 1 < 3 || totalPages <= 6) {
+    // previous省略マーク削除
+    document.querySelector("div.pager-pages > b.previous").remove();
+  }
+  
+  // 現在ページが最終ページから3ページ以内の場合（もしくは全体が6ページ以内の場合）
+  if(totalPages - pageNum <= 3 || totalPages <= 6) {
+    // next省略マーク削除
+    document.querySelector("div.pager-pages > b.next").remove();
+  }
+}
+
+/**
+ * 指定したページのJsonデータを取得する
+ */
+function getPageData(list, page, maxSize) {
+  // 総ページ数（切り上げ）
+  const totalPages = Math.ceil(list.length / maxSize);
+
+  if (page < 1 || page > totalPages) {
+    return [];
+  }
+
+  const start = (page - 1) * maxSize;
+  return list.slice(start, start + maxSize);
+}
+
+/** ================================= 関数 ================================= */
 
 /**
  * ランキングページ構成Jsonから最新のランキングデータのみ取得
@@ -109,7 +340,29 @@ function getLatestDetailPages(config, currentDurationtype) {
   return [...detailPages].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
 }
 
-// {{key}} を data[key] で置換（なければ空）
+/**
+ * ランキングページ構成JSONの指定のランキング期間タイプのデータをすべて取得
+ */
+function getDetailPagesFilteredDurationType(root, durationType) {
+
+  // 指定のランキング期間タイプを取得
+  const duration = root.rankingDurationTypes.find(
+    x => x.durationType === durationType
+  );
+
+  if (!duration) return [];
+
+  // 親情報を保持して flatMap
+  return duration.pageList.flatMap(p =>
+    p.detailPages.map(d => ({
+      durationType: durationType
+      , dataGetStartTiming: p.dataGetStartTiming
+      , ...d
+    }))
+  );
+}
+
+// HTML文字列内の{{key}} を data[key] で置換（なければ空）
 function replaceTemplate(template, data) {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
     const v = data[key];
