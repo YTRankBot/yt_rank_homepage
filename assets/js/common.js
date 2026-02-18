@@ -1,6 +1,9 @@
 // 表示状態の切り替え
 async function change_disp() {
   
+  // 検索メニューの初期表示開閉状態
+  setupSideAccordion();
+  
   // 人気リンクタグ作成
   // 人気リンクJson読み込み
   popularLinksJson = await loadJson("/assets/json/popular_links.json");
@@ -306,6 +309,27 @@ function createPopularLink(parentEle, labelName, linkUrl) {
   
   childEle.appendChild(textEle);
   parentEle.appendChild(childEle);
+}
+
+/**
+ * 検索メニューの初期表示開閉状態
+ */
+function setupSideAccordion() {
+  const el = document.getElementById("sideAccordion");
+  if (!el) return;
+
+  const mq = window.matchMedia("(max-width: 1020px)");
+
+  const apply = () => {
+    if (mq.matches) {
+      el.removeAttribute("open");     // モバイル：閉じる
+    } else {
+      el.setAttribute("open", "");    // PC：開く
+    }
+  };
+
+  apply();
+  mq.addEventListener?.("change", apply);
 }
 
 /** ============================ X関連 ============================ */
