@@ -1064,8 +1064,12 @@ div.ad-160x600 {display: none}
     font-size: 13px;
   }
   
+  .share-btn{
+    padding: 0 5px 0 4px;
+  }
+  
   .share-btn.x{
-    font-size: 10px;
+    font-size: 9px;
   }
   
   .ranking-pick__img{
