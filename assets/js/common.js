@@ -173,16 +173,15 @@ function buildBreadcrumb(rankingDurationType, category, videoWidth) {
 /**
  * 検索機能
  */
-function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, initialCategory = null, initialVideoWidth = null }) {
+function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, initialCategory = null, initialVideoWidth = null, initialKeyword = null }) {
 
   // --- 対象要素の取得 ---
   const durationTags = [...document.querySelectorAll("div.side-list.duration .tag[data-duration]")];
   const categoryTags = [...document.querySelectorAll("div.side-list.catgory .tag[data-category]")];
   const videoWidthTags = [...document.querySelectorAll("div.side-list.video-width .tag[data-video-width]")];
-
-  // いずれの要素も選択されていないときは何もしない
+  const keywordBox = document.querySelector("input#keywordInput");
+  
   const isSelectedSearchEles = (categoryTags.length + durationTags.length + videoWidthTags.length) > 0;
-  if(!isSelectedSearchEles) return;
 
   // 検索ボタン取得
   let searchBtn = document.querySelector(".side-search-btn");
@@ -192,6 +191,7 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
   let selectedDuration = params.get("duration") || initialRankingDurationType;
   let selectedCategory = params.get("category") || initialCategory;
   let selectedVideoWidth = params.get("videoWidth") || initialVideoWidth;
+  let enteredKeyword = (params.get("keyword") != null ? decodeURIComponent(params.get("keyword")) : null) || initialKeyword;
 
   // 共通：選択1つだけ active にする
   function selectOne(elems, elemToSelect) {
@@ -230,6 +230,10 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
     if(selectedVideoWidth) {
       const t = videoWidthTags.find(x => x.dataset.videoWidth === selectedVideoWidth);
       if(t) selectOne(videoWidthTags, t);
+    }
+
+    if(enteredKeyword != null && enteredKeyword.trim().length > 0) {
+      keywordBox.value = enteredKeyword;
     }
 
     // クリックで選択
@@ -278,6 +282,9 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
 
     const url = new URL(baseUrl, location.origin);
     
+    // キーワードをセット
+    enteredKeyword = keywordBox.value;
+    
     if(selectedDuration != null) {
       url.searchParams.set("duration", selectedDuration);
     }
@@ -288,6 +295,10 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
     
     if(selectedVideoWidth != null) {
       url.searchParams.set("videoWidth", selectedVideoWidth);
+    }
+    
+    if(enteredKeyword != null && enteredKeyword.trim().length > 0) {
+      url.searchParams.set("keyword", encodeURIComponent(enteredKeyword.trim()));
     }
 
     location.href = url.toString();
@@ -335,7 +346,7 @@ function setupSideAccordion() {
 /** ============================ X関連 ============================ */
 function postToX(){
 
-  // Xで共有リンク情報設定
+  // Xで共有リンク情報設定（メッセージはURLエンコードする）
   const title = document.querySelector("h2.panel__title").innerText;
   const dataAnalisisDate = document.querySelector("span.data_analisis_date").innerText;
   const message = encodeURIComponent(title

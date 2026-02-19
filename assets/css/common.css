@@ -410,6 +410,46 @@ a {color:inherit; text-decoration:none}
   display: none;
 }
 
+/* ===== サイド：キーワード検索 ===== */
+
+.side-keyword{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* 入力フィールドを “タグ” っぽく */
+.side-keyword__field{
+  position: relative;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+/* 入力欄 */
+.side-keyword__input{
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  border-radius: 1px;
+  padding: 0 5px 0 5px; /* 左アイコン + 右クリア */
+  font-size: 11px;
+  font-weight: 700;
+  outline: none;
+  text-align: left;
+}
+
+/* フォーカス時 */
+.side-keyword__field:focus-within{
+  border-color: #ffd1d1;
+  background: var(--red-soft);
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
 /* Main */
 .paper-frame {
   background:#fff;

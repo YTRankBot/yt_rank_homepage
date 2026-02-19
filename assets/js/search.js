@@ -97,6 +97,7 @@ async function generateSearchPicks() {
   const duration = params.get("duration");
   const category = params.get("category");
   const videoWidth = params.get("videoWidth");
+  const keyword = params.get("keyword");
   const pageNum = params.get("page") != null ? Number(params.get("page")) : 1;
   
   // ページ構成jsonを読み込み
@@ -136,6 +137,15 @@ async function generateSearchPicks() {
       // フル動画
       allDetails = allDetails.filter(d => d.isShort === false);
     }
+  }
+  
+  // 検索条件：キーワード
+  if(keyword != null && keyword.length > 0) {
+    const decKeyword = decodeURIComponent(keyword);
+    
+    allDetails = allDetails.filter(d => ((d.indexChannelNames != null && d.indexChannelNames.includes(decKeyword))
+                                         || (d.indexVideoTitles != null && d.indexVideoTitles.includes(decKeyword))
+                                   ));
   }
   
   // データ取得日時の降順（新しい順）に並び替えて取得
