@@ -20,6 +20,9 @@ async function generateLatestPicks() {
   let cnt = 1;
   
   for(const data of latestWeeklyDetails) {
+    // 先頭のみNEWバッジをつける
+    const newBadgeTag = cnt == 1 ? "<span class='badge-new'>NEW</span>" : "";
+  
     allCardsHtml += replaceTemplate(cardTemplate, {
       page_link : "/ranking/weekly/" + data.pageNameList[data.pageNameList.length - 1]
       , page_position : "top"
@@ -31,6 +34,7 @@ async function generateLatestPicks() {
       , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
       , bottom_rank : data.bottomRank
       , comment : data.rankingComment
+      , newBadgeTag : newBadgeTag
     }) + "\r\n";
     
     if(cnt++ >= max) {
@@ -57,6 +61,9 @@ async function generateLatestPicks() {
   cnt = 1;
   
   for(const data of latestMonthlyDetails) {
+    // 先頭のみNEWバッジをつける
+    const newBadgeTag = cnt == 1 ? "<span class='badge-new'>NEW</span>" : "";
+
     allCardsHtml += replaceTemplate(cardTemplate, {
       page_link : "/ranking/monthly/" + data.pageNameList[data.pageNameList.length - 1]
       , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
@@ -68,6 +75,7 @@ async function generateLatestPicks() {
       , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
       , bottom_rank : data.bottomRank
       , comment : data.rankingComment
+      , newBadgeTag : newBadgeTag
     }) + "\r\n";
     
     if(cnt++ >= max) {
@@ -185,6 +193,7 @@ async function generateSearchPicks() {
       , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
       , bottom_rank : data.bottomRank
       , comment : data.rankingComment
+      , newBadgeTag : ""
     }) + "\r\n";
   }
 
