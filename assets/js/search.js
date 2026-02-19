@@ -143,8 +143,8 @@ async function generateSearchPicks() {
   if(keyword != null && keyword.length > 0) {
     const decKeyword = decodeURIComponent(keyword);
     
-    allDetails = allDetails.filter(d => ((d.indexChannelNames != null && d.indexChannelNames.includes(decKeyword))
-                                         || (d.indexVideoTitles != null && d.indexVideoTitles.includes(decKeyword))
+    allDetails = allDetails.filter(d => ((d.indexChannelNames != null && jpIncludes(d.indexChannelNames, decKeyword))
+                                         || (d.indexVideoTitles != null && jpIncludes(d.indexVideoTitles, decKeyword))
                                    ));
   }
   

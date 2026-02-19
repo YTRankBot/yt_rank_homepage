@@ -445,3 +445,33 @@ function changeParam(url, paramName, paramValue) {
 
   return tmpUrl.toString();
 }
+
+/**
+ * カタカナをひらがなへ変換
+ */
+function toHiragana(str) {
+  return str.replace(/[\u30A1-\u30F6]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
+
+
+/**
+ * 日本語検索用の正規化処理
+ *
+ * ユーザー入力の「表記ゆれ」を吸収するための前処理をまとめて行う。
+ */
+function normalizeJP(str) {
+  return toHiragana(
+    str.normalize("NFKC")   // 文字の互換正規化（日本語検索で最重要）
+       .toLowerCase()       // 英字の大文字小文字を統一
+  ).replace(/ー/g, "");     // 長音記号を除去
+}
+
+
+/**
+ * 表記ゆれ対応 includes 検索
+ */
+function jpIncludes(text, keyword) {
+  return normalizeJP(text).includes(normalizeJP(keyword));
+}
