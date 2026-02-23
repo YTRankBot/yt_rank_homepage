@@ -15,6 +15,13 @@ async function change_disp() {
   for(let data of popularLinksJson) {
     createPopularLink(popularLinksParent, data.labelName, data.linkUrl);
   }
+  
+  // キーワード検索のインフォメーションマークの説明表示時の外側クリックで説明閉じる
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll("details.side-info[open]").forEach((d) => {
+      if (!d.contains(e.target)) d.removeAttribute("open");
+    });
+  });
 
   // ヘッダーメニューのアクティブ設定
   if(GlobalVar.data.currentUrl == GlobalVar.data.originUrl) {

@@ -40,7 +40,19 @@
         <div class="side-accordion__content">
           <div class="panel__sep"></div>
           
-          <h3 class="side-caption">キーワード</h3>
+          <h3 class="side-caption">
+            キーワード
+            <details class="side-info" aria-label="キーワード検索の説明">
+              <summary class="side-info__icon" aria-label="説明を表示"></summary>
+              <div class="side-info__box" role="note">
+                チャンネル名・動画タイトルを対象に検索します。<br>
+                AND：スペース区切り（例：マイクラ 実況）<br>
+                OR：OR（例：Vtuber OR 歌ってみた）<br>
+                除外：-（例：マイクラ -切り抜き）<br>
+                完全一致："検索語"
+              </div>
+            </details>
+          </h3>
           <div class="side-keyword">
 
             <div class="side-keyword__field">

@@ -151,9 +151,16 @@ async function generateSearchPicks() {
   if(keyword != null && keyword.length > 0) {
     const decKeyword = decodeURIComponent(keyword);
     
-    allDetails = allDetails.filter(d => ((d.indexChannelNames != null && jpIncludes(d.indexChannelNames, decKeyword))
-                                         || (d.indexVideoTitles != null && jpIncludes(d.indexVideoTitles, decKeyword))
-                                   ));
+    // キーワード群でクエリ化
+    const query = parseQuery(decKeyword);
+    
+    console.log(query);
+    
+    allDetails = allDetails.filter(d => matchesQuery(d, query));
+    
+//    allDetails = allDetails.filter(d => ((d.indexChannelNames != null && jpIncludes(d.indexChannelNames, decKeyword))
+//                                         || (d.indexVideoTitles != null && jpIncludes(d.indexVideoTitles, decKeyword))
+//                                   ));
   }
   
   // データ取得日時の降順（新しい順）に並び替えて取得
@@ -321,7 +328,7 @@ function getPageData(list, page, maxSize) {
   // 総ページ数（切り上げ）
   const totalPages = Math.ceil(list.length / maxSize);
 
-  if (page < 1 || page > totalPages) {
+  if(page < 1 || page > totalPages) {
     return [];
   }
 
@@ -369,7 +376,7 @@ function getDetailPagesFilteredDurationType(root, durationType) {
     x => x.durationType === durationType
   );
 
-  if (!duration) return [];
+  if(!duration) return [];
 
   // 親情報を保持して flatMap
   return duration.pageList.flatMap(p =>
@@ -388,3 +395,104 @@ function replaceTemplate(template, data) {
     return v === undefined || v === null ? "" : String(v);
   });
 }
+
+/**
+ * クエリ文字列をトークン化する
+ * 対応：囲み文字（ダブルクォート）, OR演算子, 除外文字（ハイフン）
+ */
+function tokenizeQuery(input) {
+  const s = (input ?? "").trim();
+  if(!s) return [];
+
+  // "..." または 空白で区切られた語 を取り出す
+  const re = /"([^"]*)"|(\S+)/g;
+  const tokens = [];
+  let m;
+
+  while((m = re.exec(s)) !== null) {
+    const phrase = m[1];
+    const word = m[2];
+
+    const raw = (phrase !== undefined ? phrase : word).trim();
+    if(!raw) continue;
+
+    // OR 演算子
+    if(/^or$/i.test(raw)) {
+      tokens.push({ type: "OR" });
+      continue;
+    }
+
+    // NOT（-xxx）
+    if(raw.startsWith("-") && raw.length > 1) {
+      tokens.push({ type: "TERM", value: raw.slice(1), neg: true });
+      continue;
+    }
+
+    // 通常TERM（フレーズ含む）
+    tokens.push({ type: "TERM", value: raw, neg: false });
+  }
+
+  return tokens;
+}
+
+/**
+ * ANDがORより優先の簡易パーサ
+ * - ORでグループを分け、各グループ内はAND条件として扱う
+ * - 各グループは { must: [..], mustNot: [..] }
+ */
+function parseQuery(input) {
+  const tokens = tokenizeQuery(input);
+
+  // OR で分割した AND グループ配列を作る
+  const groups = [];
+  let cur = { must: [], mustNot: [] };
+
+  const flush = () => {
+    // 空グループは捨てる（ORだけとか）
+    if(cur.must.length > 0 || cur.mustNot.length > 0) groups.push(cur);
+    cur = { must: [], mustNot: [] };
+  };
+
+  for(const t of tokens) {
+    if(t.type === "OR") {
+      flush();
+      continue;
+    }
+    if(t.type === "TERM") {
+      if(t.neg) cur.mustNot.push(t.value);
+      else cur.must.push(t.value);
+    }
+  }
+  flush();
+
+  // 何も入っていないなら null 扱い
+  return groups.length ? groups : null;
+}
+
+/**
+ * 1つのランキング詳細(d)がクエリにマッチするか判定
+ * - どれか1グループでも満たせばOK（OR）
+ * - グループ内は must 全部含む（AND）
+ * - mustNot は1つでも含んだらNG
+ *
+ * ※ jpIncludes(text, keyword) は既存の日本語ゆらぎ対応（ひら/カタなど）を利用
+ */
+function matchesQuery(d, queryGroups) {
+  if(!queryGroups) return true;
+
+  const text = ((d.indexChannelNames ?? "") + " " + (d.indexVideoTitles ?? "")).trim();
+
+  // OR: いずれかのグループが true ならOK
+  return queryGroups.some(g => {
+    // NOT: 1つでも含まれたらこのグループは不成立
+    for(const ng of g.mustNot) {
+      if(ng && jpIncludes(text, ng)) return false;
+    }
+    // AND: must を全部含む必要あり
+    for(const must of g.must) {
+      if(must && !jpIncludes(text, must)) return false;
+    }
+    return true;
+  });
+}
+
