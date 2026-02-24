@@ -154,13 +154,7 @@ async function generateSearchPicks() {
     // キーワード群でクエリ化
     const query = parseQuery(decKeyword);
     
-    console.log(query);
-    
     allDetails = allDetails.filter(d => matchesQuery(d, query));
-    
-//    allDetails = allDetails.filter(d => ((d.indexChannelNames != null && jpIncludes(d.indexChannelNames, decKeyword))
-//                                         || (d.indexVideoTitles != null && jpIncludes(d.indexVideoTitles, decKeyword))
-//                                   ));
   }
   
   // データ取得日時の降順（新しい順）に並び替えて取得
