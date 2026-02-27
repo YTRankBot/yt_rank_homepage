@@ -106,6 +106,8 @@ async function generateSearchPicks() {
   const category = params.get("category");
   const videoWidth = params.get("videoWidth");
   const keyword = params.get("keyword");
+  const dataAnalisisStart = params.get("dataAnalisisStart");
+  const dataAnalisisEnd = params.get("dataAnalisisEnd");
   const pageNum = params.get("page") != null ? Number(params.get("page")) : 1;
   
   // ページ構成jsonを読み込み
@@ -155,6 +157,33 @@ async function generateSearchPicks() {
     const query = parseQuery(decKeyword);
     
     allDetails = allDetails.filter(d => matchesQuery(d, query));
+  }
+  
+  // 検索条件：集計期間
+  if((dataAnalisisStart != null && dataAnalisisStart.length > 0)
+     || (dataAnalisisEnd != null && dataAnalisisEnd.length > 0)) {
+    const decKeyword = decodeURIComponent(keyword);
+    
+    // date入力は日付だけなので、開始=00:00:00、終了=23:59:59 として扱う
+    const qStart = (dataAnalisisStart && dataAnalisisStart.length > 0) ? toTimestamp(dataAnalisisStart + " 00:00:00") : null;
+    const qEnd = (dataAnalisisEnd && dataAnalisisEnd.length > 0) ? toTimestamp(dataAnalisisEnd + " 23:59:59") : null;
+    
+    allDetails = allDetails.filter(d => {
+      const dStart = toTimestamp(d.dataAnalisisStartDatetime);
+      const dEnd   = toTimestamp(d.dataAnalisisEndDatetime);
+
+      // データ側が欠損してるなら除外
+      if(!dStart || !dEnd) return false;
+
+      // 重なり：qStart <= dEnd && qEnd >= dStart
+      if(qStart != null && qEnd != null) {
+        return qStart <= dEnd && qEnd >= dStart;
+      } else if(qStart != null) {
+        return qStart <= dEnd;
+      } else {
+        return qEnd >= dStart;
+      }
+    });
   }
   
   // データ取得日時の降順（新しい順）に並び替えて取得

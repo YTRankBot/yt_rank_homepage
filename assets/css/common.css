@@ -412,7 +412,8 @@ a {color:inherit; text-decoration:none}
 
 /* ===== サイド：キーワード検索 ===== */
 
-.side-keyword{
+.side-keyword
+, .side-calendar{
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
@@ -420,7 +421,8 @@ a {color:inherit; text-decoration:none}
 }
 
 /* 入力フィールドを “タグ” っぽく */
-.side-keyword__field{
+.side-keyword__field
+, .side-calendar__field{
   position: relative;
   height: 36px;
   border-radius: 10px;
@@ -429,7 +431,8 @@ a {color:inherit; text-decoration:none}
 }
 
 /* 入力欄 */
-.side-keyword__input{
+.side-keyword__input
+, .side-calendar__input{
   width: 100%;
   height: 100%;
   border: 0;
@@ -443,7 +446,8 @@ a {color:inherit; text-decoration:none}
 }
 
 /* フォーカス時 */
-.side-keyword__field:focus-within{
+.side-keyword__field:focus-within
+, .side-calendar__field:focus-within{
   border-color: #ffd1d1;
   background: var(--red-soft);
   outline: 2px solid var(--red);
@@ -535,6 +539,66 @@ a {color:inherit; text-decoration:none}
     width:220px;
     left:-60px;
   }
+}
+
+/* カレンダーアイコン分の見た目調整 */
+.side-calendar__input[type="date"]{
+  padding-right: 10px; 
+}
+
+/* ボタンを右に重ねる */
+.date-field{
+  position:relative;
+}
+
+.date-btn{
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:none;
+  cursor:pointer;
+  font-size:14px;
+  opacity:.7;
+}
+
+/* 本物のdate入力は画面外へ */
+.hidden-date{
+  position:absolute;
+  left:-9999px;
+  width:0;
+  height:0;
+  opacity:0;
+}
+
+.date-field{
+  position:relative;
+}
+
+/* アイコン */
+.date-icon{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:.7;
+  pointer-events:none;
+}
+
+/* 透明date（実際にクリックされる） */
+.date-overlay{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%);
+  width:32px;
+  height:32px;
+  opacity:0;
+  cursor:default;
+  border:none;
+  background:transparent;
+  margin-right:5px;
 }
 
 /* Main */

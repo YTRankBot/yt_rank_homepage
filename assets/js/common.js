@@ -180,15 +180,22 @@ function buildBreadcrumb(rankingDurationType, category, videoWidth) {
 /**
  * 検索機能
  */
-function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, initialCategory = null, initialVideoWidth = null, initialKeyword = null }) {
+function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, initialCategory = null, initialVideoWidth = null, initialKeyword = null, initialDataAnalisisStart = null, initialDataAnalisisEnd = null }) {
 
   // --- 対象要素の取得 ---
   const durationTags = [...document.querySelectorAll("div.side-list.duration .tag[data-duration]")];
   const categoryTags = [...document.querySelectorAll("div.side-list.catgory .tag[data-category]")];
   const videoWidthTags = [...document.querySelectorAll("div.side-list.video-width .tag[data-video-width]")];
   const keywordBox = document.querySelector("input#keywordInput");
+  const dataAnalisisStart = document.querySelector("div.side-calendar input#analisisStart");
+  const dataAnalisisEnd = document.querySelector("div.side-calendar input#analisisEnd");
   
-  const isSelectedSearchEles = (categoryTags.length + durationTags.length + videoWidthTags.length) > 0;
+  const isSelectedSearchEles = categoryTags.length > 0
+                               || durationTags.length > 0
+                               || videoWidthTags.length > 0
+                               || (keywordBox != null && keywordBox.length > 0)
+                               || (dataAnalisisStart != null && dataAnalisisStart.length > 0)
+                               || (dataAnalisisEnd != null && dataAnalisisEnd.length > 0);
 
   // 検索ボタン取得
   let searchBtn = document.querySelector(".side-search-btn");
@@ -199,14 +206,16 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
   let selectedCategory = params.get("category") || initialCategory;
   let selectedVideoWidth = params.get("videoWidth") || initialVideoWidth;
   let enteredKeyword = (params.get("keyword") != null ? decodeURIComponent(params.get("keyword")) : null) || initialKeyword;
+  let enteredDataAnalisisStart = (params.get("dataAnalisisStart") != null ? decodeURIComponent(params.get("dataAnalisisStart")) : null) || initialDataAnalisisStart;
+  let enteredDataAnalisisEnd = (params.get("dataAnalisisEnd") != null ? decodeURIComponent(params.get("dataAnalisisEnd")) : null) || initialDataAnalisisEnd;
 
-  // 共通：選択1つだけ active にする
+  // 共通関数：選択1つだけ active にする
   function selectOne(elems, elemToSelect) {
     elems.forEach(el => el.classList.remove("is-active"));
     if(elemToSelect) elemToSelect.classList.add("is-active");
   }
 
-  // キーボードとタブ操作可能にする
+  // 共通関数：キーボードでタブ操作とEnter→クリック操作を可能にする
   function makeTagInteractive(tag) {
     tag.setAttribute("role", "button");
     tag.setAttribute("tabindex", "0");
@@ -219,9 +228,13 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
   }
 
   if(isSelectedSearchEles) {
+    // キーボードタブ操作設定
     durationTags.forEach(makeTagInteractive);
     categoryTags.forEach(makeTagInteractive);
     videoWidthTags.forEach(makeTagInteractive);
+    makeTagInteractive(keywordBox);
+    makeTagInteractive(dataAnalisisStart);
+    makeTagInteractive(dataAnalisisEnd);
 
     // 初期表示反映
     if(selectedDuration) {
@@ -241,6 +254,14 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
 
     if(enteredKeyword != null && enteredKeyword.trim().length > 0) {
       keywordBox.value = enteredKeyword;
+    }
+
+    if(enteredDataAnalisisStart != null && enteredDataAnalisisStart.trim().length > 0) {
+      dataAnalisisStart.value = enteredDataAnalisisStart;
+    }
+
+    if(enteredDataAnalisisEnd != null && enteredDataAnalisisEnd.trim().length > 0) {
+      dataAnalisisEnd.value = enteredDataAnalisisEnd;
     }
 
     // クリックで選択
@@ -283,29 +304,95 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
       });
     });
   }
+  
+  // イベントリスナー：カレンダーボタン入力⇒手入力反映
+  document.querySelectorAll(".date-overlay").forEach(d=>{
+    d.addEventListener("change", ()=>{
+      const id = d.dataset.sync;
+      const text = document.getElementById(id);
+      text.value = d.value; // YYYY-MM-DD
+    });
+  });
+  
+  // イベントリスナー：手入力⇒カレンダーボタン入力反映
+  document.querySelectorAll(".date-overlay").forEach(dateEl=>{
+    const id = dateEl.dataset.sync;
+    const textEl = document.getElementById(id);
+    if(!textEl) return; // 入力欄が見つからない場合
 
-  // 検索ボタン：選択値をクエリにして遷移
+    const syncTextToDate = () => {
+      // 入力値
+      const raw = textEl.value.trim();
+
+      // 未入力時
+      if(raw === ""){
+        // カレンダーボタン入力を空にする
+        dateEl.value = "";
+        return;
+      }
+      
+      // 日付フォーマットに正規化した入力値
+      const ymd = normalizeYmd(raw);
+      
+      if(ymd && isValidYmd(ymd)){
+        // テキストボックスとカレンダーボタン側へ反映
+        textEl.value = ymd;
+        dateEl.value = ymd;
+      } else {
+        // 警告
+        alert("不正な入力値です。YYYY-MM-DD形式で入力してください。");
+        
+        // テキストボックスとカレンダーボタン側へ反映
+        textEl.value = "";
+        dateEl.value = "";
+      }
+    };
+
+    // 入力中に即同期したいなら input、確定でいいなら blur 推奨
+    textEl.addEventListener("blur", syncTextToDate);
+  });
+
+  // イベントリスナー：検索ボタン押下⇒選択値をクエリにして遷移
   searchBtn.addEventListener("click", () => {
 
     const url = new URL(baseUrl, location.origin);
     
-    // キーワードをセット
+    // キーワードを取得
     enteredKeyword = keywordBox.value;
     
+    // 集計期間を取得
+    enteredDataAnalisisStart = dataAnalisisStart.value;
+    enteredDataAnalisisEnd = dataAnalisisEnd.value;
+    
+    // パラメータ設定
+    // 期間をセット
     if(selectedDuration != null) {
       url.searchParams.set("duration", selectedDuration);
     }
     
+    // カテゴリをセット
     if(selectedCategory != null) {
       url.searchParams.set("category", selectedCategory);
     }
     
+    // 動画幅をセット
     if(selectedVideoWidth != null) {
       url.searchParams.set("videoWidth", selectedVideoWidth);
     }
     
+    // キーワードをセット
     if(enteredKeyword != null && enteredKeyword.trim().length > 0) {
       url.searchParams.set("keyword", encodeURIComponent(enteredKeyword.trim()));
+    }
+    
+    // 集計期間（開始日）をセット
+    if(enteredDataAnalisisStart != null && enteredDataAnalisisStart.trim().length > 0) {
+      url.searchParams.set("dataAnalisisStart", enteredDataAnalisisStart);
+    }
+    
+    // 集計期間（終了日）をセット
+    if(enteredDataAnalisisEnd != null && enteredDataAnalisisEnd.trim().length > 0) {
+      url.searchParams.set("dataAnalisisEnd", enteredDataAnalisisEnd);
     }
 
     location.href = url.toString();
@@ -481,4 +568,40 @@ function normalizeJP(str) {
  */
 function jpIncludes(text, keyword) {
   return normalizeJP(text).includes(normalizeJP(keyword));
+}
+
+/**
+ * 日付フォーマットの正規化
+ */
+function normalizeYmd(s){
+  if(!s) return "";
+  s = s.trim();
+
+  // 2026/2/7, 2026.2.7, 2026-2-7 -> 2026-02-07
+  let m = s.match(/^(\d{4})[\/\.\-](\d{1,2})[\/\.\-](\d{1,2})$/);
+  if(m){
+    const y = m[1];
+    const mo = String(m[2]).padStart(2, "0");
+    const d = String(m[3]).padStart(2, "0");
+    return `${y}-${mo}-${d}`;
+  }
+
+  // 20260207 -> 2026-02-07
+  m = s.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if(m) return `${m[1]}-${m[2]}-${m[3]}`;
+
+  // 2026-02-07
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  return "";
+}
+
+/**
+ * 日付チェック
+ */
+function isValidYmd(ymd){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return false;
+  const [y, m, d] = ymd.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return dt.getFullYear() === y && (dt.getMonth() + 1) === m && dt.getDate() === d;
 }
