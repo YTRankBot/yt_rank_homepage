@@ -12,7 +12,7 @@ async function generateLatestPicks() {
   // Jsonから最新データ一覧のみ抽出
   const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly");
   
-  // 週間再生数ランキング一覧枠要素
+  // Youtube週間再生数ランキング一覧枠要素
   const weeklyPicksDom = document.querySelector("div#weekly-picks");
   
   let allCardsHtml = "";
@@ -26,7 +26,7 @@ async function generateLatestPicks() {
     allCardsHtml += replaceTemplate(cardTemplate, {
       page_link : "/ranking/weekly/" + data.pageNameList[data.pageNameList.length - 1]
       , page_position : "top"
-      , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
+      , img_link : "https://img.dougatoukeikingdom.jp/" + data.pageNameList[0].replace(".html", ".png")
       , durationTypeId : "weekly"
       , durationTypeName : "週間"
       , category : data.categoryName
@@ -54,7 +54,7 @@ async function generateLatestPicks() {
   // Jsonから最新データ一覧のみ抽出
   const latestMonthlyDetails = getLatestDetailPages(configJson, "monthly");
   
-  // 月間再生数ランキング一覧枠要素
+  // Youtube月間再生数ランキング一覧枠要素
   const monthlyPicksDom = document.querySelector("div#monthly-picks");
   
   allCardsHtml = "";
@@ -66,7 +66,7 @@ async function generateLatestPicks() {
 
     allCardsHtml += replaceTemplate(cardTemplate, {
       page_link : "/ranking/monthly/" + data.pageNameList[data.pageNameList.length - 1]
-      , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
+      , img_link : "https://img.dougatoukeikingdom.jp/" + data.pageNameList[0].replace(".html", ".png")
       , page_position : "top"
       , durationTypeId : "monthly"
       , durationTypeName : "月間"
@@ -215,7 +215,7 @@ async function generateSearchPicks() {
     allCardsHtml += replaceTemplate(cardTemplate, {
       page_link : "/ranking/" + data.durationType + "/" + data.pageNameList[data.pageNameList.length - 1]
       , page_position : "search"
-      , img_link : "https://img.yt-ranking-bot.jp/" + data.pageNameList[0].replace(".html", ".png")
+      , img_link : "https://img.dougatoukeikingdom.jp/" + data.pageNameList[0].replace(".html", ".png")
       , durationTypeId : data.durationType
       , durationTypeName : getDurationTypeName(data.durationType)
       , category : data.categoryName
