@@ -233,8 +233,8 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
     categoryTags.forEach(makeTagInteractive);
     videoWidthTags.forEach(makeTagInteractive);
     makeTagInteractive(keywordBox);
-    makeTagInteractive(dataAnalisisStart);
-    makeTagInteractive(dataAnalisisEnd);
+    //makeTagInteractive(dataAnalisisStart);
+    //makeTagInteractive(dataAnalisisEnd);
 
     // 初期表示反映
     if(selectedDuration) {

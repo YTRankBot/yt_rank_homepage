@@ -9,8 +9,8 @@ async function generateLatestPicks() {
   const cardTemplate = await loadTemplateHtml("/assets/template/search-card.html");
   
   // ■ 週間ランキング一覧設定
-  // Jsonから最新データ一覧のみ抽出
-  const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly");
+  // Jsonから最新データ一覧のみ抽出（発表分のみ）
+  const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly", true);
   
   // Youtube週間再生数ランキング一覧枠要素
   const weeklyPicksDom = document.querySelector("div#weekly-picks");
@@ -44,15 +44,15 @@ async function generateLatestPicks() {
   
   weeklyPicksDom.innerHTML = allCardsHtml.trim();
   
-  const weeklyEndDate = latestWeeklyDetails[0].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
-  const weeklyStartDate = latestWeeklyDetails[latestWeeklyDetails.length - 1].dataGetDatetime.split(" ")[0].replaceAll("-", "/");
+  const weeklyEndDate = latestWeeklyDetails.length != 0 ? latestWeeklyDetails[0].dataGetDatetime.split(" ")[0].replaceAll("-", "/") : "";
+  const weeklyStartDate = latestWeeklyDetails.length != 0 ? latestWeeklyDetails[latestWeeklyDetails.length - 1].dataGetDatetime.split(" ")[0].replaceAll("-", "/") : "";
   
   // 期間を更新
   document.querySelector("section.panel.weekly_picks_panel span.data_analisis_date").innerHTML = weeklyStartDate + " ～ " + weeklyEndDate;
 
   // ■ 月間ランキング一覧設定
-  // Jsonから最新データ一覧のみ抽出
-  const latestMonthlyDetails = getLatestDetailPages(configJson, "monthly");
+  // Jsonから最新データ一覧のみ抽出（発表分のみ）
+  const latestMonthlyDetails = getLatestDetailPages(configJson, "monthly", true);
   
   // Youtube月間再生数ランキング一覧枠要素
   const monthlyPicksDom = document.querySelector("div#monthly-picks");
@@ -364,7 +364,7 @@ function getPageData(list, page, maxSize) {
 /**
  * ランキングページ構成Jsonから最新のランキングデータのみ取得
  */
-function getLatestDetailPages(config, currentDurationtype) {
+function getLatestDetailPages(config, currentDurationtype, isPublished) {
   // Jsonから指定のランキング期間タイプのデータを抽出
   const duration = (config.rankingDurationTypes || []).find(
     (x) => x.durationType === currentDurationtype
@@ -383,7 +383,10 @@ function getLatestDetailPages(config, currentDurationtype) {
   
   
   // 詳細データを抽出する（ない場合はundefined）
-  const detailPages = latestPage?.detailPages || [];
+  let detailPages = latestPage?.detailPages || [];
+  
+  // ランキング発表有無をフィルターする
+  detailPages = detailPages.filter(d => d.isPublished === isPublished);
   
   // データ取得日時の降順（新しい順）に並び替えて取得
   return [...detailPages].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
