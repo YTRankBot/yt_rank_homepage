@@ -8,8 +8,8 @@ async function generateLatestPicks() {
   // テンプレート読み込み
   const cardTemplate = await loadTemplateHtml("/assets/template/search-card.html");
   
-  // ■ 週間ランキング一覧設定
-  // Jsonから最新データ一覧のみ抽出（発表分のみ）
+  // ■ X掲載週間ランキング一覧設定
+  // Jsonから最新データ一覧のみ抽出（掲載分のみ）
   const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly", true);
   
   // Youtube週間再生数ランキング一覧枠要素
@@ -50,8 +50,8 @@ async function generateLatestPicks() {
   // 期間を更新
   document.querySelector("section.panel.weekly_picks_panel span.data_analisis_date").innerHTML = weeklyStartDate + " ～ " + weeklyEndDate;
 
-  // ■ 月間ランキング一覧設定
-  // Jsonから最新データ一覧のみ抽出（発表分のみ）
+  // ■ X掲載月間ランキング一覧設定
+  // Jsonから最新データ一覧のみ抽出（掲載分のみ）
   const latestMonthlyDetails = getLatestDetailPages(configJson, "monthly", true);
   
   // Youtube月間再生数ランキング一覧枠要素
@@ -94,6 +94,46 @@ async function generateLatestPicks() {
   // 月更新
   const month = Number(latestMonthlyDetails[0].dataAnalisisStartDatetime.split(" ")[0].split("-")[1]);
   document.querySelector("section.panel.monthly_picks_panel .month").innerHTML = month;
+  
+  // ■ 未掲載週間ランキング一覧設定
+  // Jsonから最新データ一覧のみ抽出（未掲載分のみ）
+  let latestWeeklyOtherDetails = getLatestDetailPages(configJson, "weekly", false);
+  latestWeeklyOtherDetails = [...latestWeeklyOtherDetails].sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+  
+  // Youtube週間再生数ランキング一覧枠要素
+  const weeklyPicksOtherDom = document.querySelector("div#weekly-picks-other");
+  
+  allCardsHtml = "";
+  max = 7;
+  cnt = 1;
+  
+  for(const data of latestWeeklyOtherDetails) {
+  
+    allCardsHtml += replaceTemplate(cardTemplate, {
+      page_link : "/ranking/weekly/" + data.pageNameList[data.pageNameList.length - 1]
+      , page_position : "top"
+      , img_link : "https://img.dougatoukeikingdom.jp/" + data.pageNameList[0].replace(".html", ".png")
+      , durationTypeId : "weekly"
+      , durationTypeName : "週間"
+      , category : data.categoryName
+      , shortTag : (data.isShort ? "<ショート>" : "")
+      , dataGetDate : data.dataGetDatetime.split(" ")[0].replaceAll("-", "/")
+      , bottom_rank : data.bottomRank
+      , comment : data.rankingComment
+      , newBadgeTag : ""
+    }) + "\r\n";
+    
+    if(cnt++ >= max) {
+      break;
+    }
+  }
+  
+  weeklyPicksOtherDom.innerHTML = allCardsHtml.trim();
+  
+  const weeklyOtherStartDate = latestWeeklyOtherDetails.length != 0 ? latestWeeklyOtherDetails[latestWeeklyOtherDetails.length - 1].dataGetDatetime.split(" ")[0].replaceAll("-", "/") : "";
+  
+  // 期間を更新
+  document.querySelector("section.panel.weekly_picks_other_panel span.data_analisis_date").innerHTML = weeklyOtherStartDate;
 }
 
 /**
@@ -108,6 +148,10 @@ async function generateSearchPicks() {
   const keyword = params.get("keyword");
   const dataAnalisisStart = params.get("dataAnalisisStart");
   const dataAnalisisEnd = params.get("dataAnalisisEnd");
+  const latest = params.get("latest");
+  const unpublished = params.get("unpublished");
+  
+  // その他パラメータ
   const pageNum = params.get("page") != null ? Number(params.get("page")) : 1;
   
   // ページ構成jsonを読み込み
@@ -130,6 +174,17 @@ async function generateSearchPicks() {
         allDetails.push(...data);
       }
     }
+  }
+  
+  // 検索条件：最新
+  if(latest != null && latest.length > 0 && latest == "true") {
+    const latestDate = Math.max(...allDetails.map(v => v.dataGetStartTiming));
+    allDetails = allDetails.filter(d => d.dataGetStartTiming === latestDate + "");
+  }
+  
+  // 検索条件：未掲載（X掲載対象外）
+  if(unpublished != null && unpublished.length > 0 && unpublished == "true") {
+    allDetails = allDetails.filter(d => d.isPublished === false);
   }
   
   // 検索条件：カテゴリ
@@ -186,8 +241,14 @@ async function generateSearchPicks() {
     });
   }
   
-  // データ取得日時の降順（新しい順）に並び替えて取得
-  allDetails = [...allDetails].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
+  // 並び替え
+  if(latest != null && latest.length > 0 && latest == "true") {
+    // 最新表示のみの場合はカテゴリ順に並び替えて取得
+    allDetails = [...allDetails].sort((a, b) => a.categoryName.localeCompare(b.categoryName));
+  } else {
+    // データ取得日時の降順（新しい順）に並び替えて取得
+    allDetails = [...allDetails].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
+  }
   
   // 1ページ内の最大表示要素数
   const MAX_DISPLAY_ELEMENT = 7;
@@ -385,8 +446,10 @@ function getLatestDetailPages(config, currentDurationtype, isPublished) {
   // 詳細データを抽出する（ない場合はundefined）
   let detailPages = latestPage?.detailPages || [];
   
-  // ランキング発表有無をフィルターする
-  detailPages = detailPages.filter(d => d.isPublished === isPublished);
+  // ランキング掲載有無をフィルター指定ある場合
+  if(isPublished != null) {
+    detailPages = detailPages.filter(d => d.isPublished === isPublished);
+  }
   
   // データ取得日時の降順（新しい順）に並び替えて取得
   return [...detailPages].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));

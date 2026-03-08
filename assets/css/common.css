@@ -657,6 +657,20 @@ a {color:inherit; text-decoration:none}
   color: #3a3a3a;
 }
 
+section a.other-link {
+  text-align: left;
+}
+
+section a.other-link div {
+  margin: 20px 5px 0 0;
+  font-weight: 900;
+  color: #3a3a3a;
+}
+
+section a.other-link div:hover {
+  color: #959494;
+}
+
 /* Ads */
 .ad-badge {
   font-size:12px;
