@@ -361,8 +361,8 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
     enteredKeyword = keywordBox.value;
     
     // 集計期間を取得
-    enteredDataAnalisisStart = dataAnalisisStart.value;
-    enteredDataAnalisisEnd = dataAnalisisEnd.value;
+    enteredDataAnalisisStart = dataAnalisisStart?.value;
+    enteredDataAnalisisEnd = dataAnalisisEnd?.value;
     
     // パラメータ設定
     // 期間をセット
