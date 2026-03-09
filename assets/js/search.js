@@ -176,17 +176,6 @@ async function generateSearchPicks() {
     }
   }
   
-  // 検索条件：最新
-  if(latest != null && latest.length > 0 && latest == "true") {
-    const latestDate = Math.max(...allDetails.map(v => v.dataGetStartTiming));
-    allDetails = allDetails.filter(d => d.dataGetStartTiming === latestDate + "");
-  }
-  
-  // 検索条件：未掲載（X掲載対象外）
-  if(unpublished != null && unpublished.length > 0 && unpublished == "true") {
-    allDetails = allDetails.filter(d => d.isPublished === false);
-  }
-  
   // 検索条件：カテゴリ
   if(category != null && category.length > 0) {
     // カテゴリの指定がある場合
@@ -239,6 +228,17 @@ async function generateSearchPicks() {
         return qEnd >= dStart;
       }
     });
+  }
+    
+  // 検索条件：未掲載（X掲載対象外）
+  if(unpublished != null && unpublished.length > 0 && unpublished == "true") {
+    allDetails = allDetails.filter(d => d.isPublished === false);
+  }
+
+  // 検索条件：最新
+  if(latest != null && latest.length > 0 && latest == "true") {
+    const latestDate = Math.max(...allDetails.map(v => v.dataGetStartTiming));
+    allDetails = allDetails.filter(d => d.dataGetStartTiming === latestDate + "");
   }
   
   // 並び替え
@@ -436,23 +436,29 @@ function getLatestDetailPages(config, currentDurationtype, isPublished) {
   const pageList = duration.pageList || [];
   if(pageList.length === 0) return [];
   
-  // データ取得開始タイミングが最新のデータのみ抽出
-  const latestPage = pageList.reduce((best, cur) => {
-    if(!best) return cur;
-    return cur.dataGetStartTiming > best.dataGetStartTiming ? cur : best;
-  }, null);
+  // dataGetStartTiming の新しい順に並び替え
+  const sortedPageList = [...pageList].sort((a, b) => {
+    return Number(b.dataGetStartTiming) - Number(a.dataGetStartTiming);
+  });
   
-  
-  // 詳細データを抽出する（ない場合はundefined）
-  let detailPages = latestPage?.detailPages || [];
-  
-  // ランキング掲載有無をフィルター指定ある場合
-  if(isPublished != null) {
-    detailPages = detailPages.filter(d => d.isPublished === isPublished);
+  // 最新から順に見て、条件に合う detailPages が1件でもある回を採用
+  for(const page of sortedPageList) {
+    let detailPages = page.detailPages || [];
+
+    // ランキング掲載有無をフィルター指定ある場合
+    if(isPublished != null) {
+      detailPages = detailPages.filter(d => d.isPublished === isPublished);
+    }
+
+    // 1件でもあればそのグループを返す
+    if(detailPages.length > 0) {
+      return [...detailPages].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime)
+      );
+    }
   }
   
-  // データ取得日時の降順（新しい順）に並び替えて取得
-  return [...detailPages].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
+  // データが1件もない場合
+  return [];
 }
 
 /**
