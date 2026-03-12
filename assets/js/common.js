@@ -232,7 +232,7 @@ function setupSideFilterSearch({ baseUrl, initialRankingDurationType = null, ini
     durationTags.forEach(makeTagInteractive);
     categoryTags.forEach(makeTagInteractive);
     videoWidthTags.forEach(makeTagInteractive);
-    makeTagInteractive(keywordBox);
+    //makeTagInteractive(keywordBox);
     //makeTagInteractive(dataAnalisisStart);
     //makeTagInteractive(dataAnalisisEnd);
 
