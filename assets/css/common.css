@@ -216,6 +216,11 @@ a {color:inherit; text-decoration:none}
   justify-content:space-between;
   gap:10px;
 }
+
+div.ranking_head_panel {
+  width: 80%;
+}
+
 .panel__title {
   margin:0;
   font-size:14px;
@@ -227,6 +232,11 @@ a {color:inherit; text-decoration:none}
   color:var(--muted);
   font-size:12px;
 }
+
+.panel__sub.description {
+  width
+}
+
 .panel__bd {padding:12px}
 .panel__sep {
   height:1px;
