@@ -10,7 +10,14 @@ async function generateLatestPicks() {
   
   // ■ X掲載週間ランキング一覧設定
   // Jsonから最新データ一覧のみ抽出（掲載分のみ）
-  const latestWeeklyDetails = getLatestDetailPages(configJson, "weekly", true);
+  let latestWeeklyDetails = [];
+  latestWeeklyDetails.push(...getDetailPagesFilteredDurationType(configJson, "weekly"));
+  
+  // 掲載分のみ抽出
+  latestWeeklyDetails = latestWeeklyDetails.filter(d => d.isPublished === true);
+  
+  // dataGetStartTiming の新しい順に並び替え
+  latestWeeklyDetails = [...latestWeeklyDetails].sort((a, b) => toTimestamp(b.dataGetDatetime) - toTimestamp(a.dataGetDatetime));
   
   // Youtube週間再生数ランキング一覧枠要素
   const weeklyPicksDom = document.querySelector("div#weekly-picks");
@@ -18,6 +25,9 @@ async function generateLatestPicks() {
   let allCardsHtml = "";
   let max = 7;
   let cnt = 1;
+  
+  // 抽出データを7件までに絞り込み
+  latestWeeklyDetails = latestWeeklyDetails.slice(0, max);
   
   for(const data of latestWeeklyDetails) {
     // 先頭のみNEWバッジをつける
@@ -36,10 +46,6 @@ async function generateLatestPicks() {
       , comment : data.rankingComment
       , newBadgeTag : newBadgeTag
     }) + "\r\n";
-    
-    if(cnt++ >= max) {
-      break;
-    }
   }
   
   weeklyPicksDom.innerHTML = allCardsHtml.trim();
@@ -77,10 +83,6 @@ async function generateLatestPicks() {
       , comment : data.rankingComment
       , newBadgeTag : newBadgeTag
     }) + "\r\n";
-    
-    if(cnt++ >= max) {
-      break;
-    }
   }
   
   monthlyPicksDom.innerHTML = allCardsHtml.trim();
