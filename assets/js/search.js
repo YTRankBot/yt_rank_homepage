@@ -46,6 +46,8 @@ async function generateLatestPicks() {
       , comment : data.rankingComment
       , newBadgeTag : newBadgeTag
     }) + "\r\n";
+    
+    cnt++;
   }
   
   weeklyPicksDom.innerHTML = allCardsHtml.trim();
@@ -83,6 +85,8 @@ async function generateLatestPicks() {
       , comment : data.rankingComment
       , newBadgeTag : newBadgeTag
     }) + "\r\n";
+    
+    cnt++;
   }
   
   monthlyPicksDom.innerHTML = allCardsHtml.trim();
